@@ -12,12 +12,16 @@
 #include "Dot.h"
 #include "Piece.h"
 #include "Action.h"
+#include "Dice.h"
+#include "Path.h"
 
 class Player {
 public:
-    Player(Color color, SDL_Renderer *renderer);
+    Player(Color color, const Path *path, SDL_Renderer *renderer);
 
     Player(Player &&old) noexcept;
+
+    Player &operator=(Player &&other) noexcept;
 
     void render(SDL_Renderer *renderer) const;
 
@@ -33,10 +37,14 @@ public:
 
     bool doAction(const std::pair<int, int> &clickPoint);
 
+    int getActionsCount() const;
+
     ~Player();
 
 private:
     Color color;
+
+    Path *path;
 
     std::vector<Entity> entities;
 

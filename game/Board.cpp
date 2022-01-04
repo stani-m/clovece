@@ -11,3 +11,7 @@ Board::Board(SDL_Renderer *renderer): path(renderer) {
 void Board::render(SDL_Renderer *renderer) {
     path.render(renderer);
 }
+
+const Path *Board::getPath() const {
+    return &path;
+}

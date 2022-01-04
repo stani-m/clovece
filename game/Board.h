@@ -10,9 +10,12 @@
 
 class Board {
 public:
-    Board(SDL_Renderer *renderer);
+    explicit Board(SDL_Renderer *renderer);
 
     void render(SDL_Renderer *renderer);
+
+    const Path *getPath() const;
+
 private:
     Path path;
 };

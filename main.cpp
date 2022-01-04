@@ -1,11 +1,6 @@
 #include <cstdio>
 #include <SDL2/SDL.h>
-#include <vector>
-#include "game/Piece.h"
 #include "game/Tile.h"
-#include "game/Arrow.h"
-#include "game/Direction.h"
-#include "game/Board.h"
 #include "game/Game.h"
 
 const int SCREEN_WIDTH = 704;

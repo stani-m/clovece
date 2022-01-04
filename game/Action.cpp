@@ -4,10 +4,12 @@
 
 #include "Action.h"
 
-Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, const std::pair<int, int> &movePoint,
+#include <utility>
+
+Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint,
                SDL_Renderer *renderer)
         : dot(Dot(clickPoint.first, clickPoint.second, piece.getColor(), renderer)), piece(piece),
-          movePoint(movePoint) {}
+          movePoint(std::move(movePoint)) {}
 
 std::pair<int, int> Action::getClickPoint() const {
     return {dot.getX(), dot.getY()};

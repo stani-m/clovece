@@ -7,7 +7,8 @@
 #include "Piece.h"
 #include "Dice.h"
 
-Player::Player(Color color, SDL_Renderer *renderer) : color(color), pieces({nullptr, nullptr, nullptr, nullptr}) {
+Player::Player(Color color, const Path *path, SDL_Renderer *renderer)
+        : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), path(const_cast<Path *>(path)) {
     switch (color) {
         case Color::Red:
             pieces[0] = new Piece(0, 0, Color::Red, renderer);
@@ -18,10 +19,6 @@ Player::Player(Color color, SDL_Renderer *renderer) : color(color), pieces({null
             entities.push_back(Tile(1, 0, Color::Red, renderer));
             entities.push_back(Tile(1, 1, Color::Red, renderer));
             entities.push_back(Tile(0, 1, Color::Red, renderer));
-            entities.push_back(Tile(1, 5, Color::Red, renderer));
-            entities.push_back(Tile(2, 5, Color::Red, renderer));
-            entities.push_back(Tile(3, 5, Color::Red, renderer));
-            entities.push_back(Tile(4, 5, Color::Red, renderer));
             break;
         case Color::Blue:
             pieces[0] = new Piece(9, 0, Color::Blue, renderer);
@@ -32,10 +29,6 @@ Player::Player(Color color, SDL_Renderer *renderer) : color(color), pieces({null
             entities.push_back(Tile(10, 0, Color::Blue, renderer));
             entities.push_back(Tile(10, 1, Color::Blue, renderer));
             entities.push_back(Tile(9, 1, Color::Blue, renderer));
-            entities.push_back(Tile(5, 1, Color::Blue, renderer));
-            entities.push_back(Tile(5, 2, Color::Blue, renderer));
-            entities.push_back(Tile(5, 3, Color::Blue, renderer));
-            entities.push_back(Tile(5, 4, Color::Blue, renderer));
             break;
         case Color::Green:
             pieces[0] = new Piece(9, 9, Color::Green, renderer);
@@ -46,10 +39,6 @@ Player::Player(Color color, SDL_Renderer *renderer) : color(color), pieces({null
             entities.push_back(Tile(10, 9, Color::Green, renderer));
             entities.push_back(Tile(10, 10, Color::Green, renderer));
             entities.push_back(Tile(9, 10, Color::Green, renderer));
-            entities.push_back(Tile(6, 5, Color::Green, renderer));
-            entities.push_back(Tile(7, 5, Color::Green, renderer));
-            entities.push_back(Tile(8, 5, Color::Green, renderer));
-            entities.push_back(Tile(9, 5, Color::Green, renderer));
             break;
         case Color::Yellow:
             pieces[0] = new Piece(0, 9, Color::Yellow, renderer);
@@ -60,10 +49,6 @@ Player::Player(Color color, SDL_Renderer *renderer) : color(color), pieces({null
             entities.push_back(Tile(1, 9, Color::Yellow, renderer));
             entities.push_back(Tile(1, 10, Color::Yellow, renderer));
             entities.push_back(Tile(0, 10, Color::Yellow, renderer));
-            entities.push_back(Tile(5, 6, Color::Yellow, renderer));
-            entities.push_back(Tile(5, 7, Color::Yellow, renderer));
-            entities.push_back(Tile(5, 8, Color::Yellow, renderer));
-            entities.push_back(Tile(5, 9, Color::Yellow, renderer));
             break;
     }
 }
@@ -72,7 +57,7 @@ void Player::render(SDL_Renderer *renderer) const {
     for (const auto &entity: entities) {
         entity.render(renderer);
     }
-    for (const auto &piece : pieces) {
+    for (const auto &piece: pieces) {
         piece->render(renderer);
     }
     for (const auto &action: actions) {
@@ -129,31 +114,40 @@ void Player::rollDice(SDL_Renderer *renderer) {
     Dice dice(5, 5, 6, renderer);
     entities.push_back(dice);
     std::pair<int, int> start = startCoordinates();
-    Piece *piece = nullptr;
-    for (const auto &item : pieces) {
-        if (item->getState() == PieceState::InStart) {
-            piece = item;
+    Piece *pieceInStart = nullptr;
+    for (const auto &piece: pieces) {
+        if (piece->getState() == PieceState::InStart) {
+            pieceInStart = piece;
             break;
         }
     }
-    if (piece != nullptr && dice.getNumber() == 6) {
-        actions.emplace_back(Action(*piece, start, start, renderer));
+    if (pieceInStart != nullptr && dice.getNumber() == 6) {
+        actions.emplace_back(Action(*pieceInStart, start, start, renderer));
+    }
+    for (const auto &piece: pieces) {
+        if (piece->getState() == PieceState::OnPath) {
+            std::pair<int, int> nextCoords = path->getNextCoordinates(*piece, dice.getNumber());
+            if (nextCoords != std::pair<int, int>{-1, -1}) {
+                actions.emplace_back(
+                        Action(*piece, nextCoords, nextCoords, renderer));
+            }
+        }
     }
 }
 
 Player::~Player() {
-    for (auto &piece : pieces) {
+    for (auto &piece: pieces) {
         delete piece;
     }
 }
 
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)),
-                                       pieces(old.pieces), actions(std::move(old.actions)) {
+                                       pieces(old.pieces), actions(std::move(old.actions)), path(old.path) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
 }
 
 bool Player::doAction(const std::pair<int, int> &clickPoint) {
-    for (auto &action : actions) {
+    for (auto &action: actions) {
         if (action.getClickPoint() == clickPoint) {
             action.execute();
             return true;
@@ -165,4 +159,18 @@ bool Player::doAction(const std::pair<int, int> &clickPoint) {
 void Player::endTurn() {
     entities.pop_back();
     actions.clear();
+}
+
+int Player::getActionsCount() const {
+    return (int) actions.size();
+}
+
+Player &Player::operator=(Player &&other) noexcept {
+    color = other.color;
+    entities = std::move(other.entities);
+    pieces = other.pieces;
+    other.pieces = {nullptr, nullptr, nullptr, nullptr};
+    actions = std::move(other.actions);
+    path = other.path;
+    return *this;
 }

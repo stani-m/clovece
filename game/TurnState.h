@@ -7,7 +7,7 @@
 
 
 enum class TurnState {
-    WaitingForRoll = 0, WaitingToSelectAction,
+    Started, WaitingForRoll, WaitingToSelectAction, NoActions
 };
 
 

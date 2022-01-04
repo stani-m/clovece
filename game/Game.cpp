@@ -4,13 +4,14 @@
 
 #include "Game.h"
 #include "TurnState.h"
+#include "Turn.h"
 
 Game::Game(SDL_Renderer *renderer) : board(renderer), playerTurn() {
 
 }
 
 void Game::createPlayer(Color color, SDL_Renderer *renderer) {
-    players.emplace_back(std::move(Player(color, renderer)));
+    players.emplace_back(std::move(Player(color, board.getPath(), renderer)));
 }
 
 void Game::render(SDL_Renderer *renderer) {
@@ -25,39 +26,22 @@ void Game::startGame(SDL_Renderer *renderer) {
 
     playerTurn = 0;
 
-    TurnState turnState = TurnState::WaitingForRoll;
-    players[playerTurn].startTurn(renderer);
+    Turn turn(players[playerTurn]);
 
     while (SDL_WaitEvent(&e)) {
         if (e.type == SDL_QUIT) {
             break;
         }
-        Player &activePlayer = players[playerTurn];
+        std::pair<int, int> mouseClick = {-1, -1};
         if (e.type == SDL_MOUSEBUTTONDOWN) {
             auto *mouseButtonEvent = (SDL_MouseButtonEvent *) &e;
             int x = mouseButtonEvent->x / 64;
             int y = mouseButtonEvent->y / 64;
-            switch (turnState) {
-                case TurnState::WaitingForRoll: {
-                    std::pair<int, int> coordinates = activePlayer.diceCoordinates();
-                    int diceX = coordinates.first;
-                    int diceY = coordinates.second;
-                    if (x == diceX && y == diceY) {
-                        turnState = TurnState::WaitingToSelectAction;
-                        activePlayer.rollDice(renderer);
-                    }
-                    break;
-                }
-                case TurnState::WaitingToSelectAction:
-                    if (activePlayer.doAction({x, y})) {
-                        activePlayer.endTurn();
-                        playerTurn = (playerTurn + 1) % 4;
-                        Player &nextPlayer = players[playerTurn];
-                        turnState = TurnState::WaitingForRoll;
-                        nextPlayer.startTurn(renderer);
-                    }
-                    break;
-            }
+            mouseClick = {x, y};
+        }
+        if (turn.advanceTurn(mouseClick, renderer)) {
+            playerTurn = (playerTurn + 1) % 4;
+            turn = Turn(players[playerTurn]);
         }
         SDL_RenderClear(renderer);
         render(renderer);

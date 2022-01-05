@@ -6,18 +6,22 @@
 
 #include <utility>
 
-Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint,
+Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState, Piece *throwOutPiece,
                SDL_Renderer *renderer)
-        : dot(Dot(clickPoint.first, clickPoint.second, piece.getColor(), renderer)), piece(piece),
-          movePoint(std::move(movePoint)) {}
+        : dot(Dot(clickPoint.first, clickPoint.second, piece.getColor(), renderer)), movePiece(piece),
+          movePoint(std::move(movePoint)), newState(newState), throwOutPiece(throwOutPiece) {}
 
 std::pair<int, int> Action::getClickPoint() const {
-    return {dot.getX(), dot.getY()};
+    return dot.getCoordinates();
 }
 
 void Action::execute() {
-    piece.move(movePoint.first, movePoint.second);
-    piece.setState(PieceState::OnPath);
+    if (throwOutPiece != nullptr) {
+        throwOutPiece->move(throwOutPiece->getHomeCoordinates());
+        throwOutPiece->setState(PieceState::InStart);
+    }
+    movePiece.move(movePoint);
+    movePiece.setState(newState);
 }
 
 const Dot &Action::getDot() const {

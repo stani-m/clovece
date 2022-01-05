@@ -11,15 +11,13 @@
 
 class Entity {
 public:
-    void move(int newX, int newY);
+    void move(const std::pair<int, int> &coordinates);
 
     void rotate(float angle);
 
     void render(SDL_Renderer *renderer) const;
 
-    int getX() const;
-
-    int getY() const;
+    std::pair<int, int> getCoordinates() const;
 
     ~Entity();
 

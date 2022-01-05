@@ -7,7 +7,7 @@
 
 
 enum class PieceState {
-    InStart = 0, OnPath, InEnd
+    Invalid = 0, InStart, OnPath, InEnd
 };
 
 

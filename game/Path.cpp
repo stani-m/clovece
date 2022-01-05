@@ -112,8 +112,8 @@ void Path::render(SDL_Renderer *renderer) const {
     }
 }
 
-std::pair<int, int> Path::getNextCoordinates(const Piece &piece, int moveLength) const {
-    std::pair<int, int> pieceCoords = {piece.getX(), piece.getY()};
+std::pair<std::pair<int, int>, PieceState> Path::getNextCoordinates(const Piece &piece, int moveLength) const {
+    std::pair<int, int> pieceCoords = piece.getCoordinates();
     const std::array<std::pair<int, int>, 44> *path = nullptr;
     switch (piece.getColor()) {
         case Color::Red:
@@ -130,17 +130,21 @@ std::pair<int, int> Path::getNextCoordinates(const Piece &piece, int moveLength)
             break;
     }
     int currentIndex = -1;
-    for (int i = 0; i < 40; ++i) {
+    for (int i = 0; i < 44; ++i) {
         if ((*path)[i] == pieceCoords) {
             currentIndex = i;
         }
     }
     if (currentIndex == -1) {
-        return {-1, -1};
+        return {{-1, -1}, PieceState::Invalid};
     }
     int nextIndex = currentIndex + moveLength;
     if (nextIndex < 44) {
-        return (*path)[nextIndex];
+        if (nextIndex >= 40) {
+            return {(*path)[nextIndex], PieceState::InEnd};
+        } else {
+            return {(*path)[nextIndex], PieceState::OnPath};
+        }
     }
-    return {-1, -1};
+    return {{-1, -1}, PieceState::Invalid};
 }

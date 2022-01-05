@@ -17,7 +17,7 @@ public:
 
     void render(SDL_Renderer *renderer) const;
 
-    std::pair<int, int> getNextCoordinates(const Piece &piece, int moveLength) const;
+    std::pair<std::pair<int, int>, PieceState> getNextCoordinates(const Piece &piece, int moveLength) const;
 
 private:
     std::array<std::pair<int, int>, 44> redPath;

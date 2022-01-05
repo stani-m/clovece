@@ -19,8 +19,12 @@ public:
 
     Color getColor() const;
 
+    const std::pair<int, int> &getHomeCoordinates() const;
+
 private:
     PieceState state;
+
+    std::pair<int, int> homeCoordinates;
 
     Color color;
 };

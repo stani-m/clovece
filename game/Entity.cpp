@@ -24,9 +24,9 @@ Entity::Entity(int x, int y, float angle, const std::string &assetPath, SDL_Rend
     rectangle.w = 64;
 }
 
-void Entity::move(int newX, int newY) {
-    this->x = newX;
-    this->y = newY;
+void Entity::move(const std::pair<int, int> &coordinates) {
+    this->x = coordinates.first;
+    this->y = coordinates.second;
     rectangle.x = x * 64;
     rectangle.y = y * 64;
 }
@@ -39,14 +39,10 @@ Entity::~Entity() {
 //    SDL_DestroyTexture(texture); // For some reason this causes an invalid read
 }
 
-int Entity::getX() const {
-    return x;
-}
-
-int Entity::getY() const {
-    return y;
-}
-
 void Entity::rotate(float newAngle) {
     angle = newAngle;
+}
+
+std::pair<int, int> Entity::getCoordinates() const {
+    return {x, y};
 }

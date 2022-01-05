@@ -15,6 +15,8 @@ public:
 
     bool advanceTurn(const std::pair<int, int> &mouseClick, SDL_Renderer *renderer);
 
+    Player *getPlayer() const;
+
     Turn &operator=(Turn &&other) noexcept;
 
 private:

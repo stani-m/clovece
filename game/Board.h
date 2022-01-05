@@ -5,19 +5,25 @@
 #ifndef CLOVECE_BOARD_H
 #define CLOVECE_BOARD_H
 
+class Player;
+
 #include "Path.h"
 #include "Player.h"
 
 class Board {
 public:
-    explicit Board(SDL_Renderer *renderer);
+    explicit Board(std::vector<Player> *players, SDL_Renderer *renderer);
 
     void render(SDL_Renderer *renderer);
+
+    Piece *findPiece(std::pair<int, int> coordinates) const;
 
     const Path *getPath() const;
 
 private:
     Path path;
+
+    std::vector<Player> *players;
 };
 
 

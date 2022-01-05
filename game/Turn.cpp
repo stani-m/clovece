@@ -67,3 +67,7 @@ Turn &Turn::operator=(Turn &&other) noexcept {
     numberOfDiceRolls = other.numberOfDiceRolls;
     return *this;
 }
+
+Player *Turn::getPlayer() const {
+    return player;
+}

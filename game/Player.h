@@ -5,25 +5,26 @@
 #ifndef CLOVECE_PLAYER_H
 #define CLOVECE_PLAYER_H
 
+class Board;
 
 #include <vector>
 #include <array>
 #include "Entity.h"
-#include "Dot.h"
 #include "Piece.h"
 #include "Action.h"
-#include "Dice.h"
-#include "Path.h"
+#include "Board.h"
 
 class Player {
 public:
-    Player(Color color, const Path *path, SDL_Renderer *renderer);
+    Player(Color color, Board &board, SDL_Renderer *renderer);
 
     Player(Player &&old) noexcept;
 
     Player &operator=(Player &&other) noexcept;
 
     void render(SDL_Renderer *renderer) const;
+
+    void renderActions(SDL_Renderer *renderer) const;
 
     void startTurn(SDL_Renderer *renderer);
 
@@ -39,12 +40,16 @@ public:
 
     int getActionsCount() const;
 
+    const std::array<Piece *, 4> &getPieces() const;
+
+    Color getColor() const;
+
     ~Player();
 
 private:
     Color color;
 
-    Path *path;
+    Board &board;
 
     std::vector<Entity> entities;
 

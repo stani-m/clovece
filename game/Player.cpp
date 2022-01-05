@@ -4,11 +4,10 @@
 
 #include "Player.h"
 #include "Tile.h"
-#include "Piece.h"
 #include "Dice.h"
 
-Player::Player(Color color, const Path *path, SDL_Renderer *renderer)
-        : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), path(const_cast<Path *>(path)) {
+Player::Player(Color color, Board &board, SDL_Renderer *renderer)
+        : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), board(board) {
     switch (color) {
         case Color::Red:
             pieces[0] = new Piece(0, 0, Color::Red, renderer);
@@ -60,6 +59,9 @@ void Player::render(SDL_Renderer *renderer) const {
     for (const auto &piece: pieces) {
         piece->render(renderer);
     }
+}
+
+void Player::renderActions(SDL_Renderer *renderer) const {
     for (const auto &action: actions) {
         action.getDot().render(renderer);
     }
@@ -111,7 +113,7 @@ std::pair<int, int> Player::startCoordinates() const {
 
 void Player::rollDice(SDL_Renderer *renderer) {
     entities.pop_back();
-    Dice dice(5, 5, 6, renderer);
+    Dice dice(5, 5, rand() % 6 + 1, renderer);
     entities.push_back(dice);
     std::pair<int, int> start = startCoordinates();
     Piece *pieceInStart = nullptr;
@@ -122,14 +124,27 @@ void Player::rollDice(SDL_Renderer *renderer) {
         }
     }
     if (pieceInStart != nullptr && dice.getNumber() == 6) {
-        actions.emplace_back(Action(*pieceInStart, start, start, renderer));
+        Piece *piece = board.findPiece(start);
+        if (piece != nullptr) {
+            if (piece->getColor() != color) {
+                actions.emplace_back(Action(*pieceInStart, start, start, PieceState::OnPath, piece, renderer));
+            }
+        } else {
+            actions.emplace_back(Action(*pieceInStart, start, start, PieceState::OnPath, nullptr, renderer));
+        }
     }
     for (const auto &piece: pieces) {
-        if (piece->getState() == PieceState::OnPath) {
-            std::pair<int, int> nextCoords = path->getNextCoordinates(*piece, dice.getNumber());
+        if (piece->getState() != PieceState::InStart) {
+            auto[nextCoords, newState] = board.getPath()->getNextCoordinates(*piece, dice.getNumber());
             if (nextCoords != std::pair<int, int>{-1, -1}) {
-                actions.emplace_back(
-                        Action(*piece, nextCoords, nextCoords, renderer));
+                Piece *throwOutPiece = board.findPiece(nextCoords);
+                if (throwOutPiece != nullptr) {
+                    if (throwOutPiece->getColor() != color) {
+                        actions.emplace_back(Action(*piece, nextCoords, nextCoords, newState, throwOutPiece, renderer));
+                    }
+                } else {
+                    actions.emplace_back(Action(*piece, nextCoords, nextCoords, newState, nullptr, renderer));
+                }
             }
         }
     }
@@ -142,7 +157,7 @@ Player::~Player() {
 }
 
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)),
-                                       pieces(old.pieces), actions(std::move(old.actions)), path(old.path) {
+                                       pieces(old.pieces), actions(std::move(old.actions)), board(old.board) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
 }
 
@@ -171,6 +186,14 @@ Player &Player::operator=(Player &&other) noexcept {
     pieces = other.pieces;
     other.pieces = {nullptr, nullptr, nullptr, nullptr};
     actions = std::move(other.actions);
-    path = other.path;
+    board = other.board;
     return *this;
+}
+
+const std::array<Piece *, 4> &Player::getPieces() const {
+    return pieces;
+}
+
+Color Player::getColor() const {
+    return color;
 }

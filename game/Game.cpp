@@ -3,19 +3,22 @@
 //
 
 #include "Game.h"
-#include "TurnState.h"
 #include "Turn.h"
+#include "Player.h"
 
-Game::Game(SDL_Renderer *renderer) : board(renderer), playerTurn() {
+Game::Game(SDL_Renderer *renderer) : board(&players, renderer), playerTurn() {
 
 }
 
 void Game::createPlayer(Color color, SDL_Renderer *renderer) {
-    players.emplace_back(std::move(Player(color, board.getPath(), renderer)));
+    players.emplace_back(std::move(Player(color, board, renderer)));
 }
 
 void Game::render(SDL_Renderer *renderer) {
     board.render(renderer);
+    for (const auto &player: players) {
+        player.renderActions(renderer);
+    }
     for (const auto &player: players) {
         player.render(renderer);
     }
@@ -41,11 +44,21 @@ void Game::startGame(SDL_Renderer *renderer) {
         }
         if (turn.advanceTurn(mouseClick, renderer)) {
             playerTurn = (playerTurn + 1) % 4;
+            bool allInEnd = true;
+            for (const auto &piece : turn.getPlayer()->getPieces()) {
+                if (piece->getState() != PieceState::InEnd) {
+                    allInEnd = false;
+                    break;
+                }
+            }
+            if (allInEnd) {
+                printf("%s player won!\n", colorString(turn.getPlayer()->getColor()).c_str());
+                break;
+            }
             turn = Turn(players[playerTurn]);
         }
         SDL_RenderClear(renderer);
         render(renderer);
         SDL_RenderPresent(renderer);
     }
-
 }

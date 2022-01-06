@@ -64,6 +64,7 @@ std::pair<SDL_Window *, SDL_Renderer *> createRenderer() {
     if (renderer == nullptr) {
         fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
+
         return {nullptr, nullptr};
     }
     return {window, renderer};

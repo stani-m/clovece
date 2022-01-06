@@ -10,7 +10,7 @@
 
 class Dot : public Entity {
 public:
-    Dot(int x, int y, Color color, SDL_Renderer *renderer);
+    Dot(int x, int y, Color color);
 };
 
 

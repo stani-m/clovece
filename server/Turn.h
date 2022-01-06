@@ -13,7 +13,7 @@ class Turn {
 public:
     explicit Turn(Player &player);
 
-    bool advanceTurn(const std::pair<int, int> &mouseClick, SDL_Renderer *renderer);
+    bool advanceTurn(const std::pair<int, int> &mouseClick);
 
     Player *getPlayer() const;
 

@@ -12,7 +12,7 @@ class Player;
 
 class Board {
 public:
-    explicit Board(std::vector<Player> *players, SDL_Renderer *renderer);
+    explicit Board(std::vector<Player> *players);
 
     void render(SDL_Renderer *renderer);
 

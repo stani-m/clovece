@@ -4,7 +4,7 @@
 
 #include "Board.h"
 
-Board::Board(std::vector<Player> *players, SDL_Renderer *renderer): path(renderer), players(players) {
+Board::Board(std::vector<Player> *players) : players(players) {
 
 }
 

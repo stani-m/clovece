@@ -7,5 +7,5 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
 find_package(SDL2 REQUIRED)
 
-add_executable(clovece main.cpp game/Entity.cpp game/Entity.h game/Color.h game/Piece.cpp game/Piece.h game/Tile.cpp game/Tile.h game/Arrow.cpp game/Arrow.h game/Direction.h game/Board.cpp game/Board.h game/Path.cpp game/Path.h game/Player.cpp game/Player.h game/Dice.cpp game/Dice.h game/Game.cpp game/Game.h game/TurnState.h game/Dot.cpp game/Dot.h game/PieceState.h game/Action.cpp game/Action.h game/Turn.cpp game/Turn.h)
-target_link_libraries(clovece SDL2::Main)
+add_executable(clovece main.cpp server/Entity.cpp server/Entity.h server/Color.h server/Piece.cpp server/Piece.h server/Tile.cpp server/Tile.h server/Arrow.cpp server/Arrow.h server/Direction.h server/Board.cpp server/Board.h server/Path.cpp server/Path.h server/Player.cpp server/Player.h server/Dice.cpp server/Dice.h server/Game.cpp server/Game.h server/TurnState.h server/Dot.cpp server/Dot.h server/PieceState.h server/Action.cpp server/Action.h server/Turn.cpp server/Turn.h client/Client.cpp client/Client.h)
+target_link_libraries(clovece SDL2::Main pthread)

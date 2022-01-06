@@ -11,7 +11,7 @@
 
 class Piece : public Entity {
 public:
-    Piece(int x, int y, Color color, SDL_Renderer *renderer);
+    Piece(int x, int y, Color color);
 
     PieceState getState() const;
 

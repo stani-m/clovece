@@ -13,7 +13,7 @@
 // 20 - 19
 // 30 - 29
 
-Path::Path(SDL_Renderer *renderer) {
+Path::Path() {
 
     int generalPath[40][2] = {
             {0,  4},
@@ -62,7 +62,7 @@ Path::Path(SDL_Renderer *renderer) {
         bluePath[i] = {generalPath[(i + 10) % 40][0], generalPath[(i + 10) % 40][1]};
         greenPath[i] = {generalPath[(i + 20) % 40][0], generalPath[(i + 20) % 40][1]};
         yellowPath[i] = {generalPath[(i + 30) % 40][0], generalPath[(i + 30) % 40][1]};
-        entities.push_back(Tile(generalPath[i][0], generalPath[i][1], Color::White, renderer));
+        entities.push_back(Tile(generalPath[i][0], generalPath[i][1], Color::White));
     }
 
     int redEndCoords[4][2] = {
@@ -94,21 +94,21 @@ Path::Path(SDL_Renderer *renderer) {
         bluePath[40 + i] = {blueEndCoords[i][0], blueEndCoords[i][1]};
         greenPath[40 + i] = {greenEndCoords[i][0], greenEndCoords[i][1]};
         yellowPath[40 + i] = {yellowEndCoords[i][0], yellowEndCoords[i][1]};
-        entities.push_back(Tile(redEndCoords[i][0], redEndCoords[i][1], Color::Red, renderer));
-        entities.push_back(Tile(blueEndCoords[i][0], blueEndCoords[i][1], Color::Blue, renderer));
-        entities.push_back(Tile(greenEndCoords[i][0], greenEndCoords[i][1], Color::Green, renderer));
-        entities.push_back(Tile(yellowEndCoords[i][0], yellowEndCoords[i][1], Color::Yellow, renderer));
+        entities.push_back(Tile(redEndCoords[i][0], redEndCoords[i][1], Color::Red));
+        entities.push_back(Tile(blueEndCoords[i][0], blueEndCoords[i][1], Color::Blue));
+        entities.push_back(Tile(greenEndCoords[i][0], greenEndCoords[i][1], Color::Green));
+        entities.push_back(Tile(yellowEndCoords[i][0], yellowEndCoords[i][1], Color::Yellow));
     }
 
-    entities.push_back(Arrow(4, 10, Direction::Up, Color::White, renderer));
-    entities.push_back(Arrow(10, 6, Direction::Left, Color::White, renderer));
-    entities.push_back(Arrow(6, 0, Direction::Down, Color::White, renderer));
-    entities.push_back(Arrow(0, 4, Direction::Right, Color::White, renderer));
+    entities.push_back(Arrow(4, 10, Direction::Up, Color::White));
+    entities.push_back(Arrow(10, 6, Direction::Left, Color::White));
+    entities.push_back(Arrow(6, 0, Direction::Down, Color::White));
+    entities.push_back(Arrow(0, 4, Direction::Right, Color::White));
 }
 
 void Path::render(SDL_Renderer *renderer) const {
     for (const auto &entity: entities) {
-        entity.render(renderer);
+        entity.render();
     }
 }
 

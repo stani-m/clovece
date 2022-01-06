@@ -6,6 +6,7 @@
 #define CLOVECE_COLOR_H
 
 
+
 #include <string>
 
 enum class Color {

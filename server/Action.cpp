@@ -6,9 +6,9 @@
 
 #include <utility>
 
-Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState, Piece *throwOutPiece,
-               SDL_Renderer *renderer)
-        : dot(Dot(clickPoint.first, clickPoint.second, piece.getColor(), renderer)), movePiece(piece),
+Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState,
+               Piece *throwOutPiece)
+        : dot(Dot(clickPoint.first, clickPoint.second, piece.getColor())), movePiece(piece),
           movePoint(std::move(movePoint)), newState(newState), throwOutPiece(throwOutPiece) {}
 
 std::pair<int, int> Action::getClickPoint() const {

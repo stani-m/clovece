@@ -13,7 +13,7 @@
 
 class Path {
 public:
-    explicit Path(SDL_Renderer *renderer);
+    explicit Path();
 
     void render(SDL_Renderer *renderer) const;
 

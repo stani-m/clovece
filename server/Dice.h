@@ -10,7 +10,7 @@
 
 class Dice : public Entity  {
 public:
-    Dice(int x, int y, int number, SDL_Renderer *renderer);
+    Dice(int x, int y, int number);
 
     int getNumber() const;
 

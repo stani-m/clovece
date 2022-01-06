@@ -10,7 +10,7 @@
 
 class Tile : public Entity {
 public:
-    Tile(int x, int y, Color color, SDL_Renderer *renderer);
+    Tile(int x, int y, Color color);
 };
 
 

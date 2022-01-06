@@ -15,21 +15,19 @@ public:
 
     void rotate(float angle);
 
-    void render(SDL_Renderer *renderer) const;
+    void render() const;
 
-    std::pair<int, int> getCoordinates() const;
-
-    ~Entity();
+    [[nodiscard]] std::pair<int, int> getCoordinates() const;
 
 protected:
-    Entity(int x, int y, float angle, const std::string &assetPath, SDL_Renderer *renderer);
+    Entity(int x, int y, float angle, const std::string &assetPath);
 
 private:
     int x;
     int y;
     float angle;
 
-    SDL_Texture *texture;
+    int textureIndex;
     SDL_Rect rectangle{};
 };
 

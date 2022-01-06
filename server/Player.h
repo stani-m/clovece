@@ -9,6 +9,7 @@ class Board;
 
 #include <vector>
 #include <array>
+#include <netinet/in.h>
 #include "Entity.h"
 #include "Piece.h"
 #include "Action.h"
@@ -16,7 +17,7 @@ class Board;
 
 class Player {
 public:
-    Player(Color color, Board &board, SDL_Renderer *renderer);
+    Player(Color color, Board &board, int sockfd);
 
     Player(Player &&old) noexcept;
 
@@ -26,9 +27,9 @@ public:
 
     void renderActions(SDL_Renderer *renderer) const;
 
-    void startTurn(SDL_Renderer *renderer);
+    void startTurn();
 
-    void rollDice(SDL_Renderer *renderer);
+    void rollDice();
 
     void endTurn();
 
@@ -48,6 +49,9 @@ public:
 
 private:
     Color color;
+
+    int newsockfd;
+    struct sockaddr_in cli_addr;
 
     Board &board;
 

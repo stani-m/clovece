@@ -2,16 +2,32 @@
 // Created by stanislavmotesicky on 03/01/2022.
 //
 
+#include <stdexcept>
+#include <unistd.h>
 #include "Game.h"
 #include "Turn.h"
 #include "Player.h"
 
-Game::Game(SDL_Renderer *renderer) : board(&players, renderer), playerTurn() {
+Game::Game(int port) : board(&players), playerTurn(), port(port) {
+    bzero((char*)&serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+    serv_addr.sin_port = htons(port);
 
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0)
+    {
+        throw std::runtime_error("Error creating socket");
+    }
+
+    if (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        throw std::runtime_error("Error binding socket address");
+    }
 }
 
-void Game::createPlayer(Color color, SDL_Renderer *renderer) {
-    players.emplace_back(std::move(Player(color, board, renderer)));
+void Game::createPlayer(Color color) {
+    players.emplace_back(std::move(Player(color, board, sockfd)));
 }
 
 void Game::render(SDL_Renderer *renderer) {
@@ -24,8 +40,14 @@ void Game::render(SDL_Renderer *renderer) {
     }
 }
 
-void Game::startGame(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+void Game::startGame(int numberOfPlayers) {
+    Color colors[4] = {Color::Red, Color::Blue, Color::Green, Color::Yellow};
+
+    for (int i = 0; i < numberOfPlayers; ++i) {
+        createPlayer(colors[i]);
+    }
+
+    return;
 
     SDL_Event e;
 
@@ -44,8 +66,8 @@ void Game::startGame(SDL_Renderer *renderer) {
             int y = mouseButtonEvent->y / 64;
             mouseClick = {x, y};
         }
-        if (turn.advanceTurn(mouseClick, renderer)) {
-            playerTurn = (playerTurn + 1) % 4;
+        if (turn.advanceTurn(mouseClick)) {
+            playerTurn = (playerTurn + 1) % players.size();
             bool allInEnd = true;
             for (const auto &piece : turn.getPlayer()->getPieces()) {
                 if (piece->getState() != PieceState::InEnd) {
@@ -59,8 +81,13 @@ void Game::startGame(SDL_Renderer *renderer) {
             }
             turn = Turn(players[playerTurn]);
         }
-        SDL_RenderClear(renderer);
-        render(renderer);
-        SDL_RenderPresent(renderer);
     }
+}
+
+Game::~Game() {
+    close(sockfd);
+}
+
+void Game::startListening() {
+    listen(sockfd, 5);
 }

@@ -8,7 +8,7 @@ Turn::Turn(Player &player) : state(TurnState::Started), player(&player), numberO
 
 }
 
-bool Turn::advanceTurn(const std::pair<int, int> &mouseClick, SDL_Renderer *renderer) {
+bool Turn::advanceTurn(const std::pair<int, int> &mouseClick) {
     SDL_UserEvent dummyEvent = SDL_UserEvent{
             SDL_USEREVENT,
             0,
@@ -23,7 +23,7 @@ bool Turn::advanceTurn(const std::pair<int, int> &mouseClick, SDL_Renderer *rend
                 SDL_PushEvent((SDL_Event *) &dummyEvent);
                 return true;
             }
-            player->startTurn(renderer);
+            player->startTurn();
             state = TurnState::WaitingForRoll;
             return false;
         }
@@ -32,7 +32,7 @@ bool Turn::advanceTurn(const std::pair<int, int> &mouseClick, SDL_Renderer *rend
             int diceX = coordinates.first;
             int diceY = coordinates.second;
             if (mouseClick.first == diceX && mouseClick.second == diceY) {
-                player->rollDice(renderer);
+                player->rollDice();
                 numberOfDiceRolls++;
                 if (player->getActionsCount() == 0) {
                     state = TurnState::NoActions;

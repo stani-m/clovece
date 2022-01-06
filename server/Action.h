@@ -11,8 +11,8 @@
 
 class Action {
 public:
-    Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState, Piece *throwOutPiece,
-           SDL_Renderer *renderer);
+    Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState,
+           Piece *throwOutPiece);
 
     std::pair<int, int> getClickPoint() const;
 

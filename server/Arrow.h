@@ -11,7 +11,7 @@
 
 class Arrow : public Entity {
 public:
-    Arrow(int x, int y, Direction direction, Color color, SDL_Renderer *renderer);
+    Arrow(int x, int y, Direction direction, Color color);
 };
 
 

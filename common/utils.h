@@ -9,6 +9,6 @@
 
 void sendMessage(int sockFd, const std::string &message);
 
-void receiveMessage(int sockFd, char buffer[256]);
+void receiveMessage(int sockFd, void *buffer, size_t nBytes);
 
 #endif //CLOVECE_UTILS_H

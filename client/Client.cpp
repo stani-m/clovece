@@ -57,7 +57,7 @@ Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : 
         throw std::runtime_error("Error connecting to socket");
     }
 
-    receiveMessage(sockFd, buffer);
+    receiveMessage(sockFd, buffer, 0);
 
     printf("You are playing as %s!\n", buffer);
 }
@@ -89,7 +89,8 @@ void Client::render(int x, int y, float angle, int textureIndex) {
 void Client::start() {
     while (true) {
         if (!isActive) {
-            receiveMessage(sockFd, buffer);
+            bzero(buffer,256);
+            receiveMessage(sockFd, buffer, 255);
             std::string message(buffer);
             if (message == TURN_START) {
                 bool quit = pollEvents();
@@ -106,7 +107,8 @@ void Client::start() {
             } else if (message == START_REDRAW) {
                 SDL_RenderClear(renderer);
                 while (true) {
-                    receiveMessage(sockFd, buffer);
+                    bzero(buffer,256);
+                    receiveMessage(sockFd, buffer, 255);
                     message = std::string(buffer);
                     if (message == END_REDRAW) {
                         SDL_RenderPresent(renderer);
@@ -116,23 +118,26 @@ void Client::start() {
                         rectangle.w = 64;
                         rectangle.h = 64;
 
-                        receiveMessage(sockFd, buffer);
-                        rectangle.x = atoi(buffer) * 64;
+                        int x;
+                        receiveMessage(sockFd, &x, sizeof(int));
+                        rectangle.x = x * 64;
 
-                        receiveMessage(sockFd, buffer);
-                        rectangle.y = atoi(buffer) * 64;
+                        int y;
+                        receiveMessage(sockFd, &y, sizeof(int));
+                        rectangle.y = y * 64;
 
-                        receiveMessage(sockFd, buffer);
-                        float angle = atof(buffer);
+                        float angle;
+                        receiveMessage(sockFd, &angle, sizeof(float));
 
-                        receiveMessage(sockFd, buffer);
-                        int index = atoi(buffer);
+                        int index;
+                        receiveMessage(sockFd, &index, sizeof(int));
 
                         SDL_RenderCopyEx(renderer, textures[index], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
                     }
                 }
             } else if (message == PRINT_MESSAGE) {
-                receiveMessage(sockFd, buffer);
+                bzero(buffer,256);
+                receiveMessage(sockFd, buffer, 255);
                 printf("%s\n", buffer);
             }
         } else {
@@ -144,7 +149,8 @@ void Client::start() {
                     sendMessage(sockFd, MOUSE_CLICK);
                     sendMessage(sockFd, std::to_string(event.button.x / 64));
                     sendMessage(sockFd, std::to_string(event.button.y / 64));
-                    receiveMessage(sockFd, buffer);
+                    bzero(buffer,256);
+                    receiveMessage(sockFd, buffer, 255);
                     if (std::string(buffer) == DEACTIVATE) {
                         isActive = false;
                     }

@@ -5,8 +5,6 @@
 #ifndef CLOVECE_MESSAGES_H
 #define CLOVECE_MESSAGES_H
 
-#include <string>
-
 #define TURN_START "turn start"
 
 #define QUIT "quit"

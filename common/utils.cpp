@@ -14,9 +14,8 @@ void sendMessage(int sockFd, const std::string &message) {
     }
 }
 
-void receiveMessage(int sockFd, char buffer[256]) {
-    bzero(buffer,256);
-    ssize_t n = read(sockFd, buffer, 255);
+void receiveMessage(int sockFd, void *buffer, size_t nBytes) {
+    ssize_t n = read(sockFd, buffer, nBytes);
     if (n < 0)
     {
         throw std::runtime_error("Error reading from socket");

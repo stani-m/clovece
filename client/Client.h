@@ -13,11 +13,13 @@
 
 class Client {
 public:
-    explicit Client(SDL_Renderer *renderer);
+    explicit Client(const std::string &hostname, int port, SDL_Renderer *renderer);
 
-    void start(const std::string &hostname, int port);
+    void start();
 
     void render(int x, int y, float angle, int textureIndex);
+
+    virtual ~Client();
 
 private:
     int sockfd;

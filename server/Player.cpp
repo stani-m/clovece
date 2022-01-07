@@ -61,12 +61,8 @@ Player::Player(Color color, Board &board, int sockfd)
     if (playerSockFd < 0) {
         throw std::runtime_error("ERROR on accept");
     }
-
-    std::string msg = colorString(color);
-    ssize_t n = write(playerSockFd, msg.c_str(), msg.size());
-    if (n < 0) {
-        throw std::runtime_error("Error writing to socket");
-    }
+    sendString(playerSockFd, PRINT_MESSAGE);
+    sendString(playerSockFd, "You are playing as " + colorString(color) + "!");
 }
 
 void Player::render(int targetPlayerSockFd) const {
@@ -87,7 +83,7 @@ void Player::renderActions(int targetPlayerSockFd) const {
 void Player::startTurn() {
     std::pair<int, int> coordinates = diceCoordinates();
     entities.push_back(Dice(coordinates.first, coordinates.second, 6));
-    sendMessage(playerSockFd, TURN_START);
+    sendString(playerSockFd, TURN_START);
 }
 
 std::pair<int, int> Player::diceCoordinates() const {

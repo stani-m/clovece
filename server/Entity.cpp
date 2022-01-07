@@ -58,10 +58,10 @@ void Entity::move(const std::pair<int, int> &coordinates) {
 }
 
 void Entity::render(int playerSockFd) const {
-    sendMessage(playerSockFd, std::to_string(x));
-    sendMessage(playerSockFd, std::to_string(y));
-    sendMessage(playerSockFd, std::to_string(angle));
-    sendMessage(playerSockFd, std::to_string(textureIndex));
+    sendInt(playerSockFd,x);
+    sendInt(playerSockFd,y);
+    sendFloat(playerSockFd,angle);
+    sendInt(playerSockFd,textureIndex);
 }
 
 void Entity::rotate(float newAngle) {

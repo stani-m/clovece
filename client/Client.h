@@ -33,8 +33,6 @@ private:
 
     bool isActive;
 
-    char buffer[256];
-
     SDL_Texture *loadTexture(const std::string &path);
 
     SDL_Renderer *renderer;

@@ -7,8 +7,12 @@
 
 #include <string>
 
-void sendMessage(int sockFd, const std::string &message);
+void sendString(int sockFd, const std::string &message);
+void sendInt(int sockFd, int number);
+void sendFloat(int sockFd, float number);
 
-void receiveMessage(int sockFd, void *buffer, size_t nBytes);
+std::string receiveString(int sockFd);
+int receiveInt(int sockFd);
+float receiveFloat(int sockFd);
 
 #endif //CLOVECE_UTILS_H

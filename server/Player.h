@@ -23,9 +23,9 @@ public:
 
     Player &operator=(Player &&other) noexcept;
 
-    void render() const;
+    void render(int targetPlayerSockFd) const;
 
-    void renderActions() const;
+    void renderActions(int targetPlayerSockFd) const;
 
     void startTurn();
 
@@ -45,12 +45,14 @@ public:
 
     Color getColor() const;
 
+    int getPlayerSockFd() const;
+
     ~Player();
 
 private:
     Color color;
 
-    int newsockfd;
+    int playerSockFd;
     struct sockaddr_in cli_addr;
 
     Board &board;

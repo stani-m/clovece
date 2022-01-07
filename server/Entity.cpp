@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include "Entity.h"
+#include <unistd.h>
 
 Entity::Entity(int x, int y, float angle, const std::string &assetPath) :
         x(x), y(y), angle(angle) {
@@ -55,7 +56,27 @@ void Entity::move(const std::pair<int, int> &coordinates) {
     this->y = coordinates.second;
 }
 
-void Entity::render() const {
+void Entity::render(int playerSockFd) const {
+    std::string xMessage = std::to_string(x);
+    ssize_t n = write(playerSockFd, xMessage.c_str(), xMessage.size());
+    if (n < 0) {
+        throw std::runtime_error("Error writing to socket");
+    }
+    std::string yMessage = std::to_string(y);
+    n = write(playerSockFd, yMessage.c_str(), yMessage.size());
+    if (n < 0) {
+        throw std::runtime_error("Error writing to socket");
+    }
+    std::string angleMessage = std::to_string(angle);
+    n = write(playerSockFd, angleMessage.c_str(), angleMessage.size());
+    if (n < 0) {
+        throw std::runtime_error("Error writing to socket");
+    }
+    std::string textureMessage = std::to_string(x);
+    n = write(playerSockFd, textureMessage.c_str(), textureMessage.size());
+    if (n < 0) {
+        throw std::runtime_error("Error writing to socket");
+    }
 }
 
 void Entity::rotate(float newAngle) {

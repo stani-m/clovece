@@ -8,8 +8,8 @@ Board::Board(std::vector<Player> *players) : players(players) {
 
 }
 
-void Board::render() {
-    path.render();
+void Board::render(int playerSockFd) {
+    path.render(playerSockFd);
 }
 
 const Path *Board::getPath() const {

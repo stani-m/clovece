@@ -15,7 +15,7 @@ class Path {
 public:
     explicit Path();
 
-    void render() const;
+    void render(int playerSockFd) const;
 
     std::pair<std::pair<int, int>, PieceState> getNextCoordinates(const Piece &piece, int moveLength) const;
 

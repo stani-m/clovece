@@ -106,9 +106,9 @@ Path::Path() {
     entities.push_back(Arrow(0, 4, Direction::Right, Color::White));
 }
 
-void Path::render() const {
+void Path::render(int playerSockFd) const {
     for (const auto &entity: entities) {
-        entity.render();
+        entity.render(playerSockFd);
     }
 }
 

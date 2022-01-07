@@ -14,7 +14,7 @@ public:
 
     void rotate(float angle);
 
-    void render() const;
+    void render(int playerSockFd) const;
 
     [[nodiscard]] std::pair<int, int> getCoordinates() const;
 

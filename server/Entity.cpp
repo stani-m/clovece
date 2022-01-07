@@ -48,18 +48,11 @@ Entity::Entity(int x, int y, float angle, const std::string &assetPath) :
         textureIndex = 18;
     else if (assetPath == "textures/Dice6.bmp")
         textureIndex = 19;
-
-    rectangle.x = x * 64;
-    rectangle.y = y * 64;
-    rectangle.h = 64;
-    rectangle.w = 64;
 }
 
 void Entity::move(const std::pair<int, int> &coordinates) {
     this->x = coordinates.first;
     this->y = coordinates.second;
-    rectangle.x = x * 64;
-    rectangle.y = y * 64;
 }
 
 void Entity::render() const {

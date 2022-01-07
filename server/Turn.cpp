@@ -2,7 +2,9 @@
 // Created by stanislavmotesicky on 04/01/2022.
 //
 
+#include <SDL2/SDL.h>
 #include "Turn.h"
+#include <unistd.h>
 
 Turn::Turn(Player &player) : state(TurnState::Started), player(&player), numberOfDiceRolls(0) {
 
@@ -51,7 +53,7 @@ bool Turn::advanceTurn(const std::pair<int, int> &mouseClick) {
             return false;
         }
         case TurnState::NoActions: {
-            SDL_Delay(1000);
+            sleep(1);
             player->endTurn();
             state = TurnState::Started;
             SDL_PushEvent((SDL_Event *) &dummyEvent);

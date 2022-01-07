@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <unistd.h>
+#include <cstring>
 #include "Player.h"
 #include "Tile.h"
 #include "Dice.h"
@@ -66,7 +67,7 @@ Player::Player(Color color, Board &board, int sockfd)
     }
 }
 
-void Player::render(SDL_Renderer *renderer) const {
+void Player::render() const {
     for (const auto &entity: entities) {
         entity.render();
     }
@@ -75,7 +76,7 @@ void Player::render(SDL_Renderer *renderer) const {
     }
 }
 
-void Player::renderActions(SDL_Renderer *renderer) const {
+void Player::renderActions() const {
     for (const auto &action: actions) {
         action.getDot().render();
     }

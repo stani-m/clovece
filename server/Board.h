@@ -14,7 +14,7 @@ class Board {
 public:
     explicit Board(std::vector<Player> *players);
 
-    void render(SDL_Renderer *renderer);
+    void render();
 
     Piece *findPiece(std::pair<int, int> coordinates) const;
 

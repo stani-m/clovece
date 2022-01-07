@@ -8,8 +8,8 @@ Board::Board(std::vector<Player> *players) : players(players) {
 
 }
 
-void Board::render(SDL_Renderer *renderer) {
-    path.render(renderer);
+void Board::render() {
+    path.render();
 }
 
 const Path *Board::getPath() const {

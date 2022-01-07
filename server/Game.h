@@ -16,7 +16,7 @@ public:
 
     void startGame(int numberOfPlayers);
 
-    void render(SDL_Renderer *renderer);
+    void render();
 
     void startListening();
 
@@ -24,8 +24,6 @@ public:
 
 private:
     void createPlayer(Color color);
-
-    int port;
 
     int sockfd;
     struct sockaddr_in serv_addr;

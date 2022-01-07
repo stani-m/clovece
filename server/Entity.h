@@ -6,7 +6,6 @@
 #define CLOVECE_ENTITY_H
 
 
-#include <SDL2/SDL.h>
 #include "Color.h"
 
 class Entity {
@@ -28,7 +27,6 @@ private:
     float angle;
 
     int textureIndex;
-    SDL_Rect rectangle{};
 };
 
 

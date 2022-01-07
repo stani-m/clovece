@@ -7,6 +7,8 @@
 const int SCREEN_WIDTH = 704;
 const int SCREEN_HEIGHT = 704;
 
+const int PORT = 1234;
+
 typedef struct Data {
     SDL_Renderer *renderer;
     int numberOfPlayers;
@@ -19,7 +21,7 @@ typedef struct Data {
 void *serverThread(void *arg) {
     auto *data = static_cast<Data *>(arg);
 
-    Game game(1234);
+    Game game(PORT);
     game.startListening();
 
     pthread_mutex_lock(data->mutex);
@@ -41,7 +43,7 @@ void *clientThread(void *arg) {
     while (!data->serverStarted) {
         pthread_cond_wait(data->serverStartedCond, data->mutex);
     }
-    client.start(data->serverAddress, 1234);
+    client.start(data->serverAddress, PORT);
     pthread_mutex_unlock(data->mutex);
 
     return nullptr;

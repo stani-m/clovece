@@ -106,7 +106,7 @@ Path::Path() {
     entities.push_back(Arrow(0, 4, Direction::Right, Color::White));
 }
 
-void Path::render(SDL_Renderer *renderer) const {
+void Path::render() const {
     for (const auto &entity: entities) {
         entity.render();
     }

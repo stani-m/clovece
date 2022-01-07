@@ -23,9 +23,9 @@ public:
 
     Player &operator=(Player &&other) noexcept;
 
-    void render(SDL_Renderer *renderer) const;
+    void render() const;
 
-    void renderActions(SDL_Renderer *renderer) const;
+    void renderActions() const;
 
     void startTurn();
 

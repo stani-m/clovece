@@ -2,6 +2,7 @@
 // Created by stanislavmotesicky on 03/01/2022.
 //
 
+#include <SDL2/SDL.h>
 #include <stdexcept>
 #include <unistd.h>
 #include "Game.h"
@@ -32,13 +33,13 @@ void Game::createPlayer(Color color) {
     players.emplace_back(std::move(Player(color, board, sockfd)));
 }
 
-void Game::render(SDL_Renderer *renderer) {
-    board.render(renderer);
+void Game::render() {
+    board.render();
     for (const auto &player: players) {
-        player.renderActions(renderer);
+        player.renderActions();
     }
     for (const auto &player: players) {
-        player.render(renderer);
+        player.render();
     }
 }
 
@@ -71,7 +72,7 @@ void Game::startGame(int numberOfPlayers) {
         if (turn.advanceTurn(mouseClick)) {
             playerTurn = (playerTurn + 1) % players.size();
             bool allInEnd = true;
-            for (const auto &piece : turn.getPlayer()->getPieces()) {
+            for (const auto &piece: turn.getPlayer()->getPieces()) {
                 if (piece->getState() != PieceState::InEnd) {
                     allInEnd = false;
                     break;

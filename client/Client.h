@@ -8,6 +8,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <deque>
 #include <string>
 #include <netinet/in.h>
 
@@ -22,9 +23,11 @@ public:
     virtual ~Client();
 
 private:
-    int sockfd;
-    struct sockaddr_in serv_addr;
+    int sockFd;
+    struct sockaddr_in servAddr;
     struct hostent* server;
+
+    bool isActive;
 
     char buffer[256];
 
@@ -33,6 +36,8 @@ private:
     SDL_Renderer *renderer;
 
     std::vector<SDL_Texture *> textures;
+
+    static bool pollEvents();
 };
 
 

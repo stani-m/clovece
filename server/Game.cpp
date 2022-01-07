@@ -50,26 +50,13 @@ void Game::startGame(int numberOfPlayers) {
         createPlayer(colors[i]);
     }
 
-    return;
-
-    SDL_Event e;
-
     playerTurn = 0;
 
     Turn turn(players[playerTurn]);
 
-    while (SDL_WaitEvent(&e)) {
-        if (e.type == SDL_QUIT) {
-            break;
-        }
-        std::pair<int, int> mouseClick = {-1, -1};
-        if (e.type == SDL_MOUSEBUTTONDOWN) {
-            auto *mouseButtonEvent = (SDL_MouseButtonEvent *) &e;
-            int x = mouseButtonEvent->x / 64;
-            int y = mouseButtonEvent->y / 64;
-            mouseClick = {x, y};
-        }
-        if (turn.advanceTurn(mouseClick)) {
+    bool gameEnded = false;
+    while (!gameEnded) {
+        if (turn.advanceTurn()) {
             playerTurn = (playerTurn + 1) % players.size();
             bool allInEnd = true;
             for (const auto &piece: turn.getPlayer()->getPieces()) {

@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Tile.h"
 #include "Dice.h"
+#include "../common/utils.h"
+#include "../common/messages.h"
 
 Player::Player(Color color, Board &board, int sockfd)
         : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), board(board) {
@@ -85,6 +87,7 @@ void Player::renderActions(int targetPlayerSockFd) const {
 void Player::startTurn() {
     std::pair<int, int> coordinates = diceCoordinates();
     entities.push_back(Dice(coordinates.first, coordinates.second, 6));
+    sendMessage(playerSockFd, TURN_START);
 }
 
 std::pair<int, int> Player::diceCoordinates() const {

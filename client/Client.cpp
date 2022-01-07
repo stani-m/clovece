@@ -5,9 +5,11 @@
 #include <stdexcept>
 #include <netdb.h>
 #include "Client.h"
+#include "../common/utils.h"
+#include "../common/messages.h"
 #include <unistd.h>
 
-Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : renderer(renderer) {
+Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : renderer(renderer), isActive(false) {
     textures.emplace_back(loadTexture("assets/RedPiece.bmp"));
     textures.emplace_back(loadTexture("assets/BluePiece.bmp"));
     textures.emplace_back(loadTexture("assets/GreenPiece.bmp"));
@@ -35,32 +37,27 @@ Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : 
         throw std::runtime_error("Error, no such host");
     }
 
-    bzero((char*)&serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
+    bzero((char*)&servAddr, sizeof(servAddr));
+    servAddr.sin_family = AF_INET;
     bcopy(
             (char*)server->h_addr,
-            (char*)&serv_addr.sin_addr.s_addr,
+            (char*)&servAddr.sin_addr.s_addr,
             server->h_length
     );
-    serv_addr.sin_port = htons(port);
+    servAddr.sin_port = htons(port);
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    sockFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockFd < 0)
     {
         throw std::runtime_error("Error creating socket");
     }
 
-    if(connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    if(connect(sockFd, (struct sockaddr*)&servAddr, sizeof(servAddr)) < 0)
     {
         throw std::runtime_error("Error connecting to socket");
     }
 
-    bzero(buffer,256);
-    ssize_t n = read(sockfd, buffer, 255);
-    if (n < 0)
-    {
-        throw std::runtime_error("Error reading from socket");
-    }
+    receiveMessage(sockFd, buffer);
 
     printf("You are playing as %s!\n", buffer);
 }
@@ -90,16 +87,83 @@ void Client::render(int x, int y, float angle, int textureIndex) {
 }
 
 void Client::start() {
+    while (true) {
+        if (!isActive) {
+            receiveMessage(sockFd, buffer);
+            std::string message(buffer);
+            if (message == TURN_START) {
+                bool quit = pollEvents();
+                if (quit) {
+                    sendMessage(sockFd, QUIT);
+                } else {
+                    isActive = true;
+                    sendMessage(sockFd, CONTINUE);
+                }
+            } else if (message == QUIT) {
+                break;
+            } else if (message == ACTIVATE) {
+                isActive = true;
+            } else if (message == START_REDRAW) {
+                SDL_RenderClear(renderer);
+                while (true) {
+                    receiveMessage(sockFd, buffer);
+                    message = std::string(buffer);
+                    if (message == END_REDRAW) {
+                        SDL_RenderPresent(renderer);
+                        break;
+                    } else if (message == TEXTURE) {
+                        SDL_Rect rectangle;
+                        rectangle.w = 64;
+                        rectangle.h = 64;
 
+                        receiveMessage(sockFd, buffer);
+                        rectangle.x = atoi(buffer) * 64;
 
-//    bool endGame = false;
-//    while (!endGame) {
-//
-//    }
+                        receiveMessage(sockFd, buffer);
+                        rectangle.y = atoi(buffer) * 64;
 
+                        receiveMessage(sockFd, buffer);
+                        float angle = atof(buffer);
 
+                        receiveMessage(sockFd, buffer);
+                        int index = atoi(buffer);
+
+                        SDL_RenderCopyEx(renderer, textures[index], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
+                    }
+                }
+            } else if (message == PRINT_MESSAGE) {
+                receiveMessage(sockFd, buffer);
+                printf("%s\n", buffer);
+            }
+        } else {
+            SDL_Event event;
+            if (SDL_WaitEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    sendMessage(sockFd, QUIT);
+                } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+                    sendMessage(sockFd, MOUSE_CLICK);
+                    sendMessage(sockFd, std::to_string(event.button.x / 64));
+                    sendMessage(sockFd, std::to_string(event.button.y / 64));
+                    receiveMessage(sockFd, buffer);
+                    if (std::string(buffer) == DEACTIVATE) {
+                        isActive = false;
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool Client::pollEvents() {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            return true;
+        }
+    }
+    return false;
 }
 
 Client::~Client() {
-    close(sockfd);
+    close(sockFd);
 }

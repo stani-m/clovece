@@ -10,7 +10,7 @@ Turn::Turn(Player &player) : state(TurnState::Started), player(&player), numberO
 
 }
 
-bool Turn::advanceTurn(const std::pair<int, int> &mouseClick) {
+bool Turn::advanceTurn() {
     SDL_UserEvent dummyEvent = SDL_UserEvent{
             SDL_USEREVENT,
             0,

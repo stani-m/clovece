@@ -35,13 +35,11 @@ void *serverThread(void *arg) {
 void *clientThread(void *arg) {
     auto *data = static_cast<Data *>(arg);
 
-    Client client(data->renderer);
-
     pthread_mutex_lock(data->mutex);
     while (!data->serverStarted) {
         pthread_cond_wait(data->serverStartedCond, data->mutex);
     }
-    client.start(data->serverAddress, 1234);
+    Client client(data->serverAddress, 1234, data->renderer);
     pthread_mutex_unlock(data->mutex);
 
     return nullptr;

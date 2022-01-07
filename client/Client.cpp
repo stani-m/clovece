@@ -7,7 +7,7 @@
 #include "Client.h"
 #include <unistd.h>
 
-Client::Client(SDL_Renderer *renderer) : renderer(renderer) {
+Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : renderer(renderer) {
     textures.emplace_back(loadTexture("assets/RedPiece.bmp"));
     textures.emplace_back(loadTexture("assets/BluePiece.bmp"));
     textures.emplace_back(loadTexture("assets/GreenPiece.bmp"));
@@ -28,33 +28,7 @@ Client::Client(SDL_Renderer *renderer) : renderer(renderer) {
     textures.emplace_back(loadTexture("assets/Dice4.bmp"));
     textures.emplace_back(loadTexture("assets/Dice5.bmp"));
     textures.emplace_back(loadTexture("assets/Dice6.bmp"));
-}
 
-SDL_Texture *Client::loadTexture(const std::string &path) {
-    SDL_Surface *piece_surface = SDL_LoadBMP(path.c_str());
-    if (piece_surface == nullptr) {
-        throw std::runtime_error("Loading textures failed!");
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, piece_surface);
-    SDL_FreeSurface(piece_surface);
-    if (texture == nullptr) {
-        throw std::runtime_error("Something failed!");
-    }
-    return texture;
-}
-
-void Client::render(int x, int y, float angle, int textureIndex) {
-    SDL_Rect rectangle;
-    rectangle.x = x * 64;
-    rectangle.y = y * 64;
-    rectangle.h = 64;
-    rectangle.w = 64;
-
-    SDL_RenderCopyEx(renderer, textures[textureIndex], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
-}
-
-void Client::start(const std::string &hostname, int port) {
     server = gethostbyname(hostname.c_str());
     if (server == nullptr)
     {
@@ -89,11 +63,43 @@ void Client::start(const std::string &hostname, int port) {
     }
 
     printf("You are playing as %s!\n", buffer);
+}
+
+SDL_Texture *Client::loadTexture(const std::string &path) {
+    SDL_Surface *piece_surface = SDL_LoadBMP(path.c_str());
+    if (piece_surface == nullptr) {
+        throw std::runtime_error("Loading textures failed!");
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, piece_surface);
+    SDL_FreeSurface(piece_surface);
+    if (texture == nullptr) {
+        throw std::runtime_error("Something failed!");
+    }
+    return texture;
+}
+
+void Client::render(int x, int y, float angle, int textureIndex) {
+    SDL_Rect rectangle;
+    rectangle.x = x * 64;
+    rectangle.y = y * 64;
+    rectangle.h = 64;
+    rectangle.w = 64;
+
+    SDL_RenderCopyEx(renderer, textures[textureIndex], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
+}
+
+void Client::start() {
+
 
 //    bool endGame = false;
 //    while (!endGame) {
 //
 //    }
 
+
+}
+
+Client::~Client() {
     close(sockfd);
 }

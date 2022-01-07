@@ -35,7 +35,7 @@ void sendFloat(int sockFd, float number) {
 std::string receiveString(int sockFd) {
     int size = receiveInt(sockFd);
     char *buffer = new char[size + 1];
-    ssize_t n = read(sockFd, buffer, 255);
+    ssize_t n = read(sockFd, buffer, size);
     if (n < 0) {
         throw std::runtime_error("Error reading from socket");
     }

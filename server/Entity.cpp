@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "Entity.h"
 #include "../common/utils.h"
+#include "../common/messages.h"
 #include <unistd.h>
 
 Entity::Entity(int x, int y, float angle, const std::string &assetPath) :
@@ -58,6 +59,7 @@ void Entity::move(const std::pair<int, int> &coordinates) {
 }
 
 void Entity::render(int playerSockFd) const {
+    sendString(playerSockFd, TEXTURE);
     sendInt(playerSockFd,x);
     sendInt(playerSockFd,y);
     sendFloat(playerSockFd,angle);

@@ -11,7 +11,7 @@
 #include "../common/utils.h"
 #include "../common/messages.h"
 
-Player::Player(Color color, Board &board, int sockfd)
+Player::Player(Color color, Board &board, int sockFd)
         : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), board(board) {
     switch (color) {
         case Color::Red:
@@ -56,13 +56,17 @@ Player::Player(Color color, Board &board, int sockfd)
             break;
     }
 
-    socklen_t cliLen = sizeof(cli_addr);
-    playerSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &cliLen);
+    socklen_t cliLen = sizeof(cliAddr);
+    playerSockFd = accept(sockFd, (struct sockaddr *) &cliAddr, &cliLen);
     if (playerSockFd < 0) {
         throw std::runtime_error("ERROR on accept");
     }
     sendString(playerSockFd, PRINT_MESSAGE);
     sendString(playerSockFd, "You are playing as " + colorString(color) + "!");
+}
+
+void Player::startRender() const {
+    sendString(playerSockFd, START_REDRAW);
 }
 
 void Player::render(int targetPlayerSockFd) const {
@@ -72,6 +76,10 @@ void Player::render(int targetPlayerSockFd) const {
     for (const auto &piece: pieces) {
         piece->render(targetPlayerSockFd);
     }
+}
+
+void Player::presentRender() const {
+    sendString(playerSockFd, END_REDRAW);
 }
 
 void Player::renderActions(int targetPlayerSockFd) const {
@@ -172,10 +180,10 @@ Player::~Player() {
 }
 
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)), pieces(old.pieces),
-                                       actions(std::move(old.actions)), board(old.board), playerSockFd(old.playerSockFd), cli_addr(old.cli_addr) {
+                                       actions(std::move(old.actions)), board(old.board), playerSockFd(old.playerSockFd), cliAddr(old.cliAddr) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
     old.playerSockFd = 0;
-    bzero((char*)&old.cli_addr, sizeof(old.cli_addr));
+    bzero((char*)&old.cliAddr, sizeof(old.cliAddr));
 }
 
 bool Player::doAction(const std::pair<int, int> &clickPoint) {
@@ -206,8 +214,8 @@ Player &Player::operator=(Player &&other) noexcept {
     board = other.board;
     playerSockFd = other.playerSockFd;
     other.playerSockFd = 0;
-    cli_addr = other.cli_addr;
-    bzero((char*)&other.cli_addr, sizeof(other.cli_addr));
+    cliAddr = other.cliAddr;
+    bzero((char*)&other.cliAddr, sizeof(other.cliAddr));
     return *this;
 }
 
@@ -221,5 +229,9 @@ Color Player::getColor() const {
 
 int Player::getPlayerSockFd() const {
     return playerSockFd;
+}
+
+void Player::quit() const {
+    sendString(playerSockFd, QUIT);
 }
 

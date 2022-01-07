@@ -83,6 +83,8 @@ void Client::render(int x, int y, float angle, int textureIndex) {
 }
 
 void Client::start() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
     while (true) {
         if (!isActive) {
             std::string message = receiveString(sockFd);

@@ -60,21 +60,33 @@ void Game::startGame(int numberOfPlayers) {
 
     bool gameEnded = false;
     while (!gameEnded) {
-        if (turn.advanceTurn()) {
-            playerTurn = (playerTurn + 1) % players.size();
-            bool allInEnd = true;
-            for (const auto &piece: turn.getPlayer()->getPieces()) {
-                if (piece->getState() != PieceState::InEnd) {
-                    allInEnd = false;
-                    break;
-                }
-            }
-            if (allInEnd) {
-                printf("%s player won!\n", colorString(turn.getPlayer()->getColor()).c_str());
-                break;
-            }
-            turn = Turn(players[playerTurn]);
+//        if (turn.advanceTurn()) {
+//            playerTurn = (playerTurn + 1) % players.size();
+//            bool allInEnd = true;
+//            for (const auto &piece: turn.getPlayer()->getPieces()) {
+//                if (piece->getState() != PieceState::InEnd) {
+//                    allInEnd = false;
+//                    break;
+//                }
+//            }
+//            if (allInEnd) {
+//                printf("%s player won!\n", colorString(turn.getPlayer()->getColor()).c_str());
+//                break;
+//            }
+//            turn = Turn(players[playerTurn]);
+//        }
+        for (const auto &player : players) {
+            player.startRender();
+            render(player.getPlayerSockFd());
+            player.presentRender();
         }
+        break;
+    }
+
+    sleep(3);
+
+    for (const auto &player : players) {
+        player.quit();
     }
 }
 

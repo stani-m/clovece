@@ -48,6 +48,8 @@ void *clientThread(void *arg) {
     Client client(data->serverAddress, PORT, data->renderer);
     pthread_mutex_unlock(data->mutex);
 
+    client.start();
+
     return nullptr;
 }
 

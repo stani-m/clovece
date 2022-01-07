@@ -17,15 +17,19 @@ class Board;
 
 class Player {
 public:
-    Player(Color color, Board &board, int sockfd);
+    Player(Color color, Board &board, int sockFd);
 
     Player(Player &&old) noexcept;
 
     Player &operator=(Player &&other) noexcept;
 
+    void startRender() const;
+
     void render(int targetPlayerSockFd) const;
 
     void renderActions(int targetPlayerSockFd) const;
+
+    void presentRender() const;
 
     void startTurn();
 
@@ -47,13 +51,15 @@ public:
 
     int getPlayerSockFd() const;
 
+    void quit() const;
+
     ~Player();
 
 private:
     Color color;
 
     int playerSockFd;
-    struct sockaddr_in cli_addr;
+    struct sockaddr_in cliAddr;
 
     Board &board;
 

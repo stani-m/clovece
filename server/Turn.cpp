@@ -15,6 +15,7 @@ Turn::Turn(Player &player) : state(TurnState::Started), player(&player), numberO
 }
 
 bool Turn::advanceTurn() {
+    std::pair<int, int> mouseClick = {-1, -1};
     SDL_UserEvent dummyEvent = SDL_UserEvent{
             SDL_USEREVENT,
             0,
@@ -34,10 +35,7 @@ bool Turn::advanceTurn() {
             return false;
         }
         case TurnState::WaitingForRoll: {
-            std::pair<int, int> coordinates = player->diceCoordinates();
-            int diceX = coordinates.first;
-            int diceY = coordinates.second;
-            if (mouseClick.first == diceX && mouseClick.second == diceY) {
+            if (mouseClick == player->diceCoordinates()) {
                 player->rollDice();
                 numberOfDiceRolls++;
                 if (player->getActionsCount() == 0) {

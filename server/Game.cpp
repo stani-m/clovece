@@ -8,20 +8,22 @@
 #include "Turn.h"
 #include "Player.h"
 
-Game::Game(int port) : board(&players), playerTurn(), port(port) {
-    bzero((char*)&serv_addr, sizeof(serv_addr));
+Game::Game(int port) : board(&players), playerTurn() {
+    bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(port);
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
+    if (sockfd < 0) {
         throw std::runtime_error("Error creating socket");
     }
 
-    if (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
-    {
+    int yes = 1;
+
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+
+    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         throw std::runtime_error("Error binding socket address");
     }
 }

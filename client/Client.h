@@ -6,7 +6,11 @@
 #define CLOVECE_CLIENT_H
 
 
+#ifdef linux
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #include <vector>
 #include <deque>
 #include <string>

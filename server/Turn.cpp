@@ -2,7 +2,11 @@
 // Created by stanislavmotesicky on 04/01/2022.
 //
 
+#ifdef linux
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #include "Turn.h"
 #include <unistd.h>
 

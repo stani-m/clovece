@@ -2,7 +2,11 @@
 // Created by stanislavmotesicky on 03/01/2022.
 //
 
+#ifdef linux
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #include <stdexcept>
 #include <unistd.h>
 #include "Game.h"

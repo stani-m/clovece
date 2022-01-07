@@ -1,5 +1,9 @@
 #include <cstdio>
+#ifdef linux
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #include "server/Game.h"
 #include "client/Client.h"
 #include <pthread.h>

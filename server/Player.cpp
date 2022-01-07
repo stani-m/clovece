@@ -54,31 +54,31 @@ Player::Player(Color color, Board &board, int sockfd)
             break;
     }
 
-    socklen_t cli_len = sizeof(cli_addr);
-    newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &cli_len);
-    if (newsockfd < 0) {
+    socklen_t cliLen = sizeof(cli_addr);
+    playerSockFd = accept(sockfd, (struct sockaddr *) &cli_addr, &cliLen);
+    if (playerSockFd < 0) {
         throw std::runtime_error("ERROR on accept");
     }
 
     std::string msg = colorString(color);
-    ssize_t n = write(newsockfd, msg.c_str(), msg.size());
+    ssize_t n = write(playerSockFd, msg.c_str(), msg.size());
     if (n < 0) {
         throw std::runtime_error("Error writing to socket");
     }
 }
 
-void Player::render() const {
+void Player::render(int targetPlayerSockFd) const {
     for (const auto &entity: entities) {
-        entity.render();
+        entity.render(targetPlayerSockFd);
     }
     for (const auto &piece: pieces) {
-        piece->render();
+        piece->render(targetPlayerSockFd);
     }
 }
 
-void Player::renderActions() const {
+void Player::renderActions(int targetPlayerSockFd) const {
     for (const auto &action: actions) {
-        action.getDot().render();
+        action.getDot().render(targetPlayerSockFd);
     }
 }
 
@@ -169,13 +169,13 @@ Player::~Player() {
     for (auto &piece: pieces) {
         delete piece;
     }
-    close(newsockfd);
+    close(playerSockFd);
 }
 
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)), pieces(old.pieces),
-                                       actions(std::move(old.actions)), board(old.board), newsockfd(old.newsockfd), cli_addr(old.cli_addr) {
+                                       actions(std::move(old.actions)), board(old.board), playerSockFd(old.playerSockFd), cli_addr(old.cli_addr) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
-    old.newsockfd = 0;
+    old.playerSockFd = 0;
     bzero((char*)&old.cli_addr, sizeof(old.cli_addr));
 }
 
@@ -205,8 +205,8 @@ Player &Player::operator=(Player &&other) noexcept {
     other.pieces = {nullptr, nullptr, nullptr, nullptr};
     actions = std::move(other.actions);
     board = other.board;
-    newsockfd = other.newsockfd;
-    other.newsockfd = 0;
+    playerSockFd = other.playerSockFd;
+    other.playerSockFd = 0;
     cli_addr = other.cli_addr;
     bzero((char*)&other.cli_addr, sizeof(other.cli_addr));
     return *this;
@@ -218,5 +218,9 @@ const std::array<Piece *, 4> &Player::getPieces() const {
 
 Color Player::getColor() const {
     return color;
+}
+
+int Player::getPlayerSockFd() const {
+    return playerSockFd;
 }
 

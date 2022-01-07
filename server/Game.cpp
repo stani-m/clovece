@@ -10,36 +10,36 @@
 #include "Player.h"
 
 Game::Game(int port) : board(&players), playerTurn() {
-    bzero((char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(port);
+    bzero((char *) &servAddr, sizeof(servAddr));
+    servAddr.sin_family = AF_INET;
+    servAddr.sin_addr.s_addr = INADDR_ANY;
+    servAddr.sin_port = htons(port);
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
+    serverSockFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSockFd < 0) {
         throw std::runtime_error("Error creating socket");
     }
 
     int yes = 1;
 
-    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+    setsockopt(serverSockFd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 
-    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+    if (bind(serverSockFd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0) {
         throw std::runtime_error("Error binding socket address");
     }
 }
 
 void Game::createPlayer(Color color) {
-    players.emplace_back(std::move(Player(color, board, sockfd)));
+    players.emplace_back(std::move(Player(color, board, serverSockFd)));
 }
 
-void Game::render() {
-    board.render();
+void Game::render(int playerSockFd) {
+    board.render(playerSockFd);
     for (const auto &player: players) {
-        player.renderActions();
+        player.renderActions(playerSockFd);
     }
     for (const auto &player: players) {
-        player.render();
+        player.render(playerSockFd);
     }
 }
 
@@ -88,9 +88,9 @@ void Game::startGame(int numberOfPlayers) {
 }
 
 Game::~Game() {
-    close(sockfd);
+    close(serverSockFd);
 }
 
 void Game::startListening() {
-    listen(sockfd, 5);
+    listen(serverSockFd, 5);
 }

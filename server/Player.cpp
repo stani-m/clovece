@@ -93,7 +93,7 @@ void Player::renderActions(int targetPlayerSockFd) const {
 
 void Player::startTurn() {
     std::pair<int, int> coordinates = diceCoordinates();
-    entities.push_back(Dice(coordinates.first, coordinates.second, 6));
+    entities.push_back(Dice(coordinates, 6));
 }
 
 std::pair<int, int> Player::diceCoordinates() const {
@@ -141,7 +141,7 @@ std::pair<int, int> Player::startCoordinates() const {
 
 void Player::rollDice() {
     entities.pop_back();
-    Dice dice(5, 5, GetRandomValue(1, 6));
+    Dice dice({5, 5}, GetRandomValue(1, 6));
     entities.push_back(dice);
     std::pair<int, int> start = startCoordinates();
     Piece *pieceInStart = nullptr;

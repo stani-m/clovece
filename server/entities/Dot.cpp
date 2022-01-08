@@ -4,5 +4,5 @@
 
 #include "Dot.h"
 
-Dot::Dot(int x, int y, SColor color) :
-        Entity(x, 0.0, "textures/" + colorString(color) + "Dot.bmp") {}
+Dot::Dot(std::pair<int, int> coordinates, SColor color) :
+        Entity(coordinates, 0.0, "textures/" + colorString(color) + "Dot.bmp") {}

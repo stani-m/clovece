@@ -10,7 +10,7 @@
 
 class Dice : public Entity {
 public:
-    Dice(int x, int y, int number);
+    Dice(std::pair<int, int> coordinates, int number);
 
     int getNumber() const;
 

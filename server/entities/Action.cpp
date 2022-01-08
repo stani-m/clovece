@@ -6,7 +6,7 @@
 
 Action::Action(Piece &piece, const std::pair<int, int> &clickPoint, std::pair<int, int> movePoint, PieceState newState,
                Piece *throwOutPiece)
-        : dot(Dot(clickPoint.first, clickPoint.second, piece.getSColor())), movePiece(piece),
+        : dot(Dot(clickPoint, piece.getSColor())), movePiece(piece),
           movePoint(std::move(movePoint)), newState(newState), throwOutPiece(throwOutPiece) {}
 
 std::pair<int, int> Action::getClickPoint() const {

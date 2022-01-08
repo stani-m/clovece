@@ -41,6 +41,11 @@ int main(int argn, char *argv[]) {
     SetTraceLogLevel(LOG_WARNING);
 
     if (std::string(argv[1]) == "start") {
+        int numberOfPlayers = std::stoi(argv[2]);
+        if(numberOfPlayers < 1 || numberOfPlayers > 4) {
+            fprintf(stderr, "incorrect number of players\n");
+            return 1;
+        }
         pthread_t server;
 
         pthread_mutex_t mutex;
@@ -75,6 +80,9 @@ int main(int argn, char *argv[]) {
     } else if (std::string(argv[1]) == "connect") {
         Client client(std::string(argv[2]), PORT);
         client.start();
+    } else {
+        fprintf(stderr,"Invalid first argument. Only valid options are start/connect.\n");
+        return 1;
     }
 
     return 0;

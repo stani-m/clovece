@@ -95,10 +95,10 @@ Path::Path() {
         entities.push_back(Tile(yellowPath[40 + i], SColor::Yellow));
     }
 
-    entities.push_back(Arrow(4, 10, Direction::Up, SColor::White));
-    entities.push_back(Arrow(10, 6, Direction::Left, SColor::White));
-    entities.push_back(Arrow(6, 0, Direction::Down, SColor::White));
-    entities.push_back(Arrow(0, 4, Direction::Right, SColor::White));
+    entities.push_back(Arrow({4, 10}, Direction::Up, SColor::White));
+    entities.push_back(Arrow({10, 6}, Direction::Left, SColor::White));
+    entities.push_back(Arrow({6, 0}, Direction::Down, SColor::White));
+    entities.push_back(Arrow({0, 4}, Direction::Right, SColor::White));
 }
 
 void Path::render(int playerSockFd) const {

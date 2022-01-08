@@ -11,7 +11,7 @@
 
 class Arrow : public Entity {
 public:
-    Arrow(int x, int y, Direction direction, SColor color);
+    Arrow(std::pair<int, int> coordinates, Direction direction, SColor color);
 };
 
 

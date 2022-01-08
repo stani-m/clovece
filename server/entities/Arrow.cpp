@@ -4,5 +4,5 @@
 
 #include "Arrow.h"
 
-Arrow::Arrow(int x, int y, Direction direction, SColor color) :
-        Entity({x, y}, (float) direction, "textures/" + colorString(color) + "Arrow.bmp") {}
+Arrow::Arrow(std::pair<int, int> coordinates, Direction direction, SColor color) :
+        Entity(coordinates, (float) direction, "textures/" + colorString(color) + "Arrow.bmp") {}

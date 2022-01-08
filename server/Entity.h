@@ -6,7 +6,7 @@
 #define CLOVECE_ENTITY_H
 
 
-#include "Color.h"
+#include "SColor.h"
 
 class Entity {
 public:
@@ -16,7 +16,7 @@ public:
 
     void render(int playerSockFd) const;
 
-    [[nodiscard]] std::pair<int, int> getCoordinates() const;
+    std::pair<int, int> getCoordinates() const;
 
 protected:
     Entity(int x, int y, float angle, const std::string &assetPath);

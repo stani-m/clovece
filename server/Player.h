@@ -17,7 +17,7 @@ class Board;
 
 class Player {
 public:
-    Player(Color color, Board &board, int sockFd);
+    Player(SColor color, Board &board, int sockFd);
 
     Player(Player &&old) noexcept;
 
@@ -47,7 +47,7 @@ public:
 
     const std::array<Piece *, 4> &getPieces() const;
 
-    Color getColor() const;
+    SColor getSColor() const;
 
     int getPlayerSockFd() const;
 
@@ -56,7 +56,7 @@ public:
     ~Player();
 
 private:
-    Color color;
+    SColor color;
 
     int playerSockFd;
     struct sockaddr_in cliAddr;

@@ -5,5 +5,5 @@
 #include "Arrow.h"
 #include "Direction.h"
 
-Arrow::Arrow(int x, int y, Direction direction, Color color) :
+Arrow::Arrow(int x, int y, Direction direction, SColor color) :
         Entity(x, y, (float) direction, "textures/" + colorString(color) + "Arrow.bmp") {}

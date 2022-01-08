@@ -11,13 +11,13 @@
 
 class Piece : public Entity {
 public:
-    Piece(int x, int y, Color color);
+    Piece(int x, int y, SColor color);
 
     PieceState getState() const;
 
     void setState(PieceState state);
 
-    Color getColor() const;
+    SColor getSColor() const;
 
     const std::pair<int, int> &getHomeCoordinates() const;
 
@@ -26,7 +26,7 @@ private:
 
     std::pair<int, int> homeCoordinates;
 
-    Color color;
+    SColor color;
 };
 
 

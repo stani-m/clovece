@@ -20,10 +20,10 @@ public:
 
     void startListening();
 
-    virtual ~Game();
+    ~Game();
 
 private:
-    void createPlayer(Color color);
+    void createPlayer(SColor color);
 
     int serverSockFd;
     struct sockaddr_in servAddr;

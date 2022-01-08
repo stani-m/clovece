@@ -4,7 +4,7 @@
 
 #include "Piece.h"
 
-Piece::Piece(int x, int y, Color color) :
+Piece::Piece(int x, int y, SColor color) :
         Entity(x, y, 0.0, "textures/" + colorString(color) + "Piece.bmp"), state(PieceState::InStart),
         color(color),
         homeCoordinates(x, y) {}
@@ -17,7 +17,7 @@ void Piece::setState(PieceState state) {
     Piece::state = state;
 }
 
-Color Piece::getColor() const {
+SColor Piece::getSColor() const {
     return color;
 }
 

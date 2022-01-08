@@ -10,7 +10,7 @@
 
 class Dot : public Entity {
 public:
-    Dot(int x, int y, Color color);
+    Dot(int x, int y, SColor color);
 };
 
 

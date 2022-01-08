@@ -4,5 +4,5 @@
 
 #include "Tile.h"
 
-Tile::Tile(int x, int y, Color color) :
+Tile::Tile(int x, int y, SColor color) :
         Entity(x, y, 0.0, "textures/" + colorString(color) + "Tile.bmp") {}

@@ -9,23 +9,23 @@
 
 #include <string>
 
-enum class Color {
+enum class SColor {
     Red, Green, Blue, Yellow, Black, White
 };
 
-inline std::string colorString(Color color) {
+inline std::string colorString(SColor color) {
     switch (color) {
-        case Color::Red:
+        case SColor::Red:
             return "Red";
-        case Color::Green:
+        case SColor::Green:
             return "Green";
-        case Color::Blue:
+        case SColor::Blue:
             return "Blue";
-        case Color::Yellow:
+        case SColor::Yellow:
             return "Yellow";
-        case Color::Black:
+        case SColor::Black:
             return "Black";
-        case Color::White:
+        case SColor::White:
             return "White";
     }
     return "";

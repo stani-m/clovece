@@ -6,40 +6,47 @@
 #define CLOVECE_CLIENT_H
 
 
-#ifdef linux
-#include <SDL2/SDL.h>
-#else
-#include <SDL.h>
-#endif
 #include <vector>
 #include <deque>
 #include <string>
 #include <netinet/in.h>
+#include <raylib.h>
+
+struct REntity {
+    int x;
+    int y;
+    float angle;
+    Texture2D *texture;
+
+    void render() const;
+};
 
 class Client {
 public:
-    explicit Client(const std::string &hostname, int port, SDL_Renderer *renderer);
+    explicit Client(const std::string &hostname, int port);
 
     void start();
 
-    void render(int x, int y, float angle, int textureIndex);
-
-    virtual ~Client();
+    ~Client();
 
 private:
+
+    void loadTextures();
+    void unloadTextures();
+
     int sockFd;
     struct sockaddr_in servAddr;
     struct hostent* server;
 
+    const int WINDOW_WIDTH = 704;
+    const int WINDOW_HEIGHT = 704;
+
     bool isActive;
 
-    SDL_Texture *loadTexture(const std::string &path);
+    std::vector<REntity> entities;
 
-    SDL_Renderer *renderer;
-
-    std::vector<SDL_Texture *> textures;
-
-    static bool pollEvents();
+    std::vector<Image> images;
+    std::vector<Texture2D> textures;
 };
 
 

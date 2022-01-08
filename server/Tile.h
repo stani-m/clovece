@@ -10,7 +10,7 @@
 
 class Tile : public Entity {
 public:
-    Tile(int x, int y, Color color);
+    Tile(int x, int y, SColor color);
 };
 
 

@@ -8,148 +8,141 @@
 #include "../common/utils.h"
 #include "../common/messages.h"
 #include <unistd.h>
+#include <cstring>
 
-Client::Client(const std::string &hostname, int port, SDL_Renderer *renderer) : renderer(renderer), isActive(false) {
-    textures.emplace_back(loadTexture("assets/RedPiece.bmp"));
-    textures.emplace_back(loadTexture("assets/BluePiece.bmp"));
-    textures.emplace_back(loadTexture("assets/GreenPiece.bmp"));
-    textures.emplace_back(loadTexture("assets/YellowPiece.bmp"));
-    textures.emplace_back(loadTexture("assets/RedTile.bmp"));
-    textures.emplace_back(loadTexture("assets/BlueTile.bmp"));
-    textures.emplace_back(loadTexture("assets/GreenTile.bmp"));
-    textures.emplace_back(loadTexture("assets/YellowTile.bmp"));
-    textures.emplace_back(loadTexture("assets/WhiteTile.bmp"));
-    textures.emplace_back(loadTexture("assets/RedDot.bmp"));
-    textures.emplace_back(loadTexture("assets/BlueDot.bmp"));
-    textures.emplace_back(loadTexture("assets/GreenDot.bmp"));
-    textures.emplace_back(loadTexture("assets/YellowDot.bmp"));
-    textures.emplace_back(loadTexture("assets/WhiteArrow.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice1.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice2.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice3.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice4.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice5.bmp"));
-    textures.emplace_back(loadTexture("assets/Dice6.bmp"));
+Client::Client(const std::string &hostname, int port) : isActive(false) {
+    images.emplace_back(LoadImage("assets/RedPiece.png"));
+    images.emplace_back(LoadImage("assets/BluePiece.png"));
+    images.emplace_back(LoadImage("assets/GreenPiece.png"));
+    images.emplace_back(LoadImage("assets/YellowPiece.png"));
+    images.emplace_back(LoadImage("assets/RedTile.png"));
+    images.emplace_back(LoadImage("assets/BlueTile.png"));
+    images.emplace_back(LoadImage("assets/GreenTile.png"));
+    images.emplace_back(LoadImage("assets/YellowTile.png"));
+    images.emplace_back(LoadImage("assets/WhiteTile.png"));
+    images.emplace_back(LoadImage("assets/RedDot.png"));
+    images.emplace_back(LoadImage("assets/BlueDot.png"));
+    images.emplace_back(LoadImage("assets/GreenDot.png"));
+    images.emplace_back(LoadImage("assets/YellowDot.png"));
+    images.emplace_back(LoadImage("assets/WhiteArrow.png"));
+    images.emplace_back(LoadImage("assets/Dice1.png"));
+    images.emplace_back(LoadImage("assets/Dice2.png"));
+    images.emplace_back(LoadImage("assets/Dice3.png"));
+    images.emplace_back(LoadImage("assets/Dice4.png"));
+    images.emplace_back(LoadImage("assets/Dice5.png"));
+    images.emplace_back(LoadImage("assets/Dice6.png"));
 
     server = gethostbyname(hostname.c_str());
-    if (server == nullptr)
-    {
+    if (server == nullptr) {
         throw std::runtime_error("Error, no such host");
     }
 
-    bzero((char*)&servAddr, sizeof(servAddr));
+    bzero((char *) &servAddr, sizeof(servAddr));
     servAddr.sin_family = AF_INET;
     bcopy(
-            (char*)server->h_addr,
-            (char*)&servAddr.sin_addr.s_addr,
+            (char *) server->h_addr,
+            (char *) &servAddr.sin_addr.s_addr,
             server->h_length
     );
     servAddr.sin_port = htons(port);
 
     sockFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockFd < 0)
-    {
+    if (sockFd < 0) {
         throw std::runtime_error("Error creating socket");
     }
 
-    if(connect(sockFd, (struct sockaddr*)&servAddr, sizeof(servAddr)) < 0)
-    {
+    if (connect(sockFd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0) {
         throw std::runtime_error("Error connecting to socket");
     }
 }
 
-SDL_Texture *Client::loadTexture(const std::string &path) {
-    SDL_Surface *piece_surface = SDL_LoadBMP(path.c_str());
-    if (piece_surface == nullptr) {
-        throw std::runtime_error("Loading textures failed!");
-    }
-
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, piece_surface);
-    SDL_FreeSurface(piece_surface);
-    if (texture == nullptr) {
-        throw std::runtime_error("Something failed!");
-    }
-    return texture;
-}
-
-void Client::render(int x, int y, float angle, int textureIndex) {
-    SDL_Rect rectangle;
-    rectangle.x = x * 64;
-    rectangle.y = y * 64;
-    rectangle.h = 64;
-    rectangle.w = 64;
-
-    SDL_RenderCopyEx(renderer, textures[textureIndex], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
-}
-
 void Client::start() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Človeče");
+    SetTargetFPS(60);
 
-    while (true) {
+    loadTextures();
+
+    bool externalQuit = false;
+    while (!WindowShouldClose()) {
         if (!isActive) {
             std::string message = receiveString(sockFd);
-            if (message == TURN_START) {
-                bool quit = pollEvents();
-                if (quit) {
-                    sendString(sockFd, QUIT);
-                } else {
-                    isActive = true;
-                    sendString(sockFd, CONTINUE);
-                }
-            } else if (message == QUIT) {
+            if (message == QUIT) {
+                externalQuit = true;
                 break;
             } else if (message == ACTIVATE) {
+                sendString(sockFd, CONTINUE);
                 isActive = true;
             } else if (message == START_REDRAW) {
-                SDL_RenderClear(renderer);
-                while (true) {
-                    message = receiveString(sockFd);
-                    if (message == END_REDRAW) {
-                        SDL_RenderPresent(renderer);
-                        break;
-                    } else if (message == TEXTURE) {
-                        SDL_Rect rectangle;
-                        rectangle.w = 64;
-                        rectangle.h = 64;
-                        rectangle.x = receiveInt(sockFd) * 64;
-                        rectangle.y = receiveInt(sockFd) * 64;
-                        float angle = receiveFloat(sockFd);
-                        int index = receiveInt(sockFd);
-
-                        SDL_RenderCopyEx(renderer, textures[index], nullptr, &rectangle, angle, nullptr, SDL_FLIP_NONE);
-                    }
+                entities.clear();
+                while (receiveString(sockFd) == TEXTURE) {
+                    REntity entity = {receiveInt(sockFd),
+                                      receiveInt(sockFd),
+                                      receiveFloat(sockFd),
+                                      &textures[receiveInt(sockFd)]};
+                    entities.emplace_back(entity);
                 }
             } else if (message == PRINT_MESSAGE) {
                 printf("%s\n", receiveString(sockFd).c_str());
             }
         } else {
-            SDL_Event event;
-            if (SDL_WaitEvent(&event)) {
-                if (event.type == SDL_QUIT) {
-                    sendString(sockFd, QUIT);
-                } else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                    sendString(sockFd, MOUSE_CLICK);
-                    sendInt(sockFd, event.button.x / 64);
-                    sendInt(sockFd, event.button.y / 64);
-                    if (receiveString(sockFd) == DEACTIVATE) {
-                        isActive = false;
-                    }
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                sendString(sockFd, MOUSE_CLICK);
+                sendInt(sockFd, GetMouseX() / 64);
+                sendInt(sockFd, GetMouseY() / 64);
+                if (receiveString(sockFd) == DEACTIVATE) {
+                    isActive = false;
                 }
             }
         }
-    }
-}
 
-bool Client::pollEvents() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            return true;
+        BeginDrawing();
+        ClearBackground(BLACK);
+        for (const auto &entity: entities) {
+            entity.render();
         }
+        EndDrawing();
     }
-    return false;
+
+    unloadTextures();
+    CloseWindow();
+
+    if (!externalQuit) {
+        if (!isActive) {
+            while (true) {
+                std::string message = receiveString(sockFd);
+                if (message == QUIT) {
+                    return;
+                } else if (message == ACTIVATE) {
+                    break;
+                }
+            }
+        }
+        sendString(sockFd, QUIT);
+    }
 }
 
 Client::~Client() {
     close(sockFd);
+}
+
+void Client::loadTextures() {
+    for (const auto &image : images) {
+        textures.emplace_back(LoadTextureFromImage(image));
+        UnloadImage(image);
+    }
+    images.clear();
+}
+
+void Client::unloadTextures() {
+    for (const auto &texture : textures) {
+        UnloadTexture(texture);
+    }
+    textures.clear();
+}
+
+void REntity::render() const {
+    Rectangle src = {0.0f, 0.0f, 16.0f, 16.0f};
+    Rectangle dst = {(float) x * 64.0f + 32.0f, (float) y * 64.0f + 32.0f, 64.0f, 64.0f};
+    Vector2 origin = {dst.width / 2.0f, dst.height / 2.0f};
+    DrawTexturePro(*texture, src, dst, origin, angle, WHITE);
 }

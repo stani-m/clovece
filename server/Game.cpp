@@ -2,13 +2,9 @@
 // Created by stanislavmotesicky on 03/01/2022.
 //
 
-#ifdef linux
-#include <SDL2/SDL.h>
-#else
-#include <SDL.h>
-#endif
 #include <stdexcept>
 #include <unistd.h>
+#include <cstring>
 #include "Game.h"
 #include "Turn.h"
 #include "Player.h"
@@ -33,7 +29,7 @@ Game::Game(int port) : board(&players), playerTurn() {
     }
 }
 
-void Game::createPlayer(Color color) {
+void Game::createPlayer(SColor color) {
     players.emplace_back(std::move(Player(color, board, serverSockFd)));
 }
 
@@ -48,7 +44,7 @@ void Game::render(int playerSockFd) {
 }
 
 void Game::startGame(int numberOfPlayers) {
-    Color colors[4] = {Color::Red, Color::Blue, Color::Green, Color::Yellow};
+    SColor colors[4] = {SColor::Red, SColor::Blue, SColor::Green, SColor::Yellow};
 
     for (int i = 0; i < numberOfPlayers; ++i) {
         createPlayer(colors[i]);
@@ -70,7 +66,7 @@ void Game::startGame(int numberOfPlayers) {
 //                }
 //            }
 //            if (allInEnd) {
-//                printf("%s player won!\n", colorString(turn.getPlayer()->getColor()).c_str());
+//                printf("%s player won!\n", colorString(turn.getPlayer()->getSColor()).c_str());
 //                break;
 //            }
 //            turn = Turn(players[playerTurn]);

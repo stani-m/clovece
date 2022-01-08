@@ -56,7 +56,7 @@ int main(int argn, char *argv[]) {
     SetTraceLogLevel(LOG_WARNING);
 
     if (std::string(argv[1]) == "start") {
-        pthread_t server, client;
+        pthread_t server;
 
         pthread_mutex_t mutex;
         pthread_cond_t serverStartedCond;
@@ -73,36 +73,23 @@ int main(int argn, char *argv[]) {
         };
 
         pthread_create(&server, nullptr, &serverThread, &data);
-        pthread_create(&client, nullptr, &clientThread, &data);
 
-        pthread_join(client, nullptr);
+        pthread_mutex_lock(data.mutex);
+        while (!data.serverStarted) {
+            pthread_cond_wait(data.serverStartedCond, data.mutex);
+        }
+        Client client(data.serverAddress, PORT);
+        pthread_mutex_unlock(data.mutex);
+
+        client.start();
+
         pthread_join(server, nullptr);
 
         pthread_mutex_destroy(&mutex);
         pthread_cond_destroy(&serverStartedCond);
     } else if (std::string(argv[1]) == "connect") {
-        pthread_t client;
-
-        pthread_mutex_t mutex;
-        pthread_cond_t serverStartedCond;
-
-        pthread_mutex_init(&mutex, nullptr);
-        pthread_cond_init(&serverStartedCond, nullptr);
-
-        Data data{
-                .numberOfPlayers = -1,
-                .serverAddress = std::string(argv[2]),
-                .mutex = &mutex,
-                .serverStarted = true,
-                .serverStartedCond = &serverStartedCond
-        };
-
-        pthread_create(&client, nullptr, &clientThread, &data);
-
-        pthread_join(client, nullptr);
-
-        pthread_mutex_destroy(&mutex);
-        pthread_cond_destroy(&serverStartedCond);
+        Client client(std::string(argv[2]), PORT);
+        client.start();
     }
 
     return 0;

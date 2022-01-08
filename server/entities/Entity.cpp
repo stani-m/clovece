@@ -3,13 +3,13 @@
 //
 
 #include <stdexcept>
+#include <utility>
 #include "Entity.h"
-#include "../common/utils.h"
-#include "../common/messages.h"
-#include <unistd.h>
+#include "../../common/utils.h"
+#include "../../common/messages.h"
 
-Entity::Entity(int x, int y, float angle, const std::string &assetPath) :
-        x(x), y(y), angle(angle) {
+Entity::Entity(std::pair<int, int> coordinates, float angle, const std::string &assetPath) :
+        coordinates(std::move(coordinates)), angle(angle) {
 
     if (assetPath == "textures/RedPiece.bmp")
         textureIndex = 0;
@@ -51,19 +51,21 @@ Entity::Entity(int x, int y, float angle, const std::string &assetPath) :
         textureIndex = 18;
     else if (assetPath == "textures/Dice6.bmp")
         textureIndex = 19;
+    else {
+        throw std::runtime_error("Texture doesn't exists!");
+    }
 }
 
-void Entity::move(const std::pair<int, int> &coordinates) {
-    this->x = coordinates.first;
-    this->y = coordinates.second;
+void Entity::move(const std::pair<int, int> &coord) {
+    coordinates = coord;
 }
 
 void Entity::render(int playerSockFd) const {
     sendString(playerSockFd, TEXTURE);
-    sendInt(playerSockFd,x);
-    sendInt(playerSockFd,y);
-    sendFloat(playerSockFd,angle);
-    sendInt(playerSockFd,textureIndex);
+    sendInt(playerSockFd, coordinates.first);
+    sendInt(playerSockFd, coordinates.second);
+    sendFloat(playerSockFd, angle);
+    sendInt(playerSockFd, textureIndex);
 }
 
 void Entity::rotate(float newAngle) {
@@ -71,5 +73,5 @@ void Entity::rotate(float newAngle) {
 }
 
 std::pair<int, int> Entity::getCoordinates() const {
-    return {x, y};
+    return coordinates;
 }

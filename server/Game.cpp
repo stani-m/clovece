@@ -7,7 +7,6 @@
 #include <cstring>
 #include "Game.h"
 #include "Turn.h"
-#include "Player.h"
 #include "../common/messages.h"
 
 Game::Game(int port) : board(&players), playerTurn() {
@@ -60,7 +59,7 @@ void Game::startGame(int numberOfPlayers) {
         auto[quit, redraw, wait] = info;
 
         if (quit) {
-            for (const auto &player : players) {
+            for (const auto &player: players) {
                 player.sendMessage(PRINT_MESSAGE);
                 player.sendMessage("Game has ended due to a player disconnecting.");
                 player.quit();
@@ -102,6 +101,6 @@ Game::~Game() {
     close(serverSockFd);
 }
 
-void Game::startListening() {
+void Game::startListening() const {
     listen(serverSockFd, 5);
 }

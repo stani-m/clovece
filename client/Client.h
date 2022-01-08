@@ -33,11 +33,12 @@ public:
 private:
 
     void loadTextures();
+
     void unloadTextures();
 
     int sockFd;
     struct sockaddr_in servAddr;
-    struct hostent* server;
+    struct hostent *server;
 
     const int WINDOW_WIDTH = 704;
     const int WINDOW_HEIGHT = 704;

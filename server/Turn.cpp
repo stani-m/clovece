@@ -3,7 +3,6 @@
 //
 
 #include "Turn.h"
-#include <unistd.h>
 #include <stdexcept>
 
 Turn::Turn(Player &player) : state(TurnState::Started), player(&player), numberOfDiceRolls(0) {

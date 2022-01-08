@@ -7,7 +7,7 @@
 
 
 #include "Entity.h"
-#include "Direction.h"
+#include "../Direction.h"
 
 class Arrow : public Entity {
 public:

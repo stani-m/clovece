@@ -17,8 +17,8 @@ const Path *Board::getPath() const {
 }
 
 Piece *Board::findPiece(std::pair<int, int> coordinates) const {
-    for (const auto &player : *players) {
-        for (const auto &piece : player.getPieces()) {
+    for (const auto &player: *players) {
+        for (const auto &piece: player.getPieces()) {
             if (piece->getCoordinates() == coordinates) {
                 return piece;
             }

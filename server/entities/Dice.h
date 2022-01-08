@@ -8,7 +8,7 @@
 
 #include "Entity.h"
 
-class Dice : public Entity  {
+class Dice : public Entity {
 public:
     Dice(int x, int y, int number);
 

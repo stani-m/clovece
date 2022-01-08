@@ -5,4 +5,4 @@
 #include "Dot.h"
 
 Dot::Dot(int x, int y, SColor color) :
-        Entity(x, y, 0.0, "textures/" + colorString(color) + "Dot.bmp") {}
+        Entity(x, 0.0, "textures/" + colorString(color) + "Dot.bmp") {}

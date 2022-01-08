@@ -11,11 +11,11 @@
 
 class Piece : public Entity {
 public:
-    Piece(int x, int y, SColor color);
+    Piece(std::pair<int, int> coordinates, SColor color);
 
     PieceState getState() const;
 
-    void setState(PieceState state);
+    void setState(PieceState pieceState);
 
     SColor getSColor() const;
 

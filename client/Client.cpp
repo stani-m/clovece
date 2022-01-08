@@ -115,7 +115,6 @@ void Client::start() {
             return;
         } else if (message == GET_CLICK) {
             sendString(sockFd, QUIT);
-            return;
         } else if (message == PRINT_MESSAGE) {
             printf("%s\n", receiveString(sockFd).c_str());
         } else if (message == START_REDRAW) {

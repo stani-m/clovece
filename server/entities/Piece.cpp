@@ -4,17 +4,17 @@
 
 #include "Piece.h"
 
-Piece::Piece(int x, int y, SColor color) :
-        Entity(x, y, 0.0, "textures/" + colorString(color) + "Piece.bmp"), state(PieceState::InStart),
+Piece::Piece(std::pair<int, int> coordinates, SColor color) :
+        Entity(coordinates, 0.0, "textures/" + colorString(color) + "Piece.bmp"), state(PieceState::InStart),
         color(color),
-        homeCoordinates(x, y) {}
+        homeCoordinates(coordinates) {}
 
 PieceState Piece::getState() const {
     return state;
 }
 
-void Piece::setState(PieceState state) {
-    Piece::state = state;
+void Piece::setState(PieceState pieceState) {
+    state = pieceState;
 }
 
 SColor Piece::getSColor() const {

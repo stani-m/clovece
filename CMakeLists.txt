@@ -26,13 +26,13 @@ if (NOT raylib_FOUND) # If there's none, fetch and build raylib
         # build raylib
         add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
 
-    endif()
+    endif ()
 
-endif()
+endif ()
 
 # This is the main part:
 
-add_executable(clovece main.cpp server/Entity.cpp server/Entity.h common/SColor.h server/Piece.cpp server/Piece.h server/Tile.cpp server/Tile.h server/Arrow.cpp server/Arrow.h server/Direction.h server/Board.cpp server/Board.h server/Path.cpp server/Path.h server/Player.cpp server/Player.h server/Dice.cpp server/Dice.h server/Game.cpp server/Game.h server/TurnState.h server/Dot.cpp server/Dot.h server/PieceState.h server/Action.cpp server/Action.h server/Turn.cpp server/Turn.h client/Client.cpp client/Client.h common/utils.h common/utils.cpp common/messages.h)
+add_executable(clovece main.cpp server/entities/Entity.cpp server/entities/Entity.h common/SColor.h server/entities/Piece.cpp server/entities/Piece.h server/entities/Tile.cpp server/entities/Tile.h server/entities/Arrow.cpp server/entities/Arrow.h server/Direction.h server/Board.cpp server/Board.h server/Path.cpp server/Path.h server/Player.cpp server/Player.h server/entities/Dice.cpp server/entities/Dice.h server/Game.cpp server/Game.h server/TurnState.h server/entities/Dot.cpp server/entities/Dot.h server/entities/PieceState.h server/entities/Action.cpp server/entities/Action.h server/Turn.cpp server/Turn.h client/Client.cpp client/Client.h common/utils.h common/utils.cpp common/messages.h)
 #set(raylib_VERBOSE 1)
 target_link_libraries(clovece raylib pthread)
 
@@ -41,6 +41,6 @@ if (APPLE)
     target_link_libraries(clovece "-framework IOKit")
     target_link_libraries(clovece "-framework Cocoa")
     target_link_libraries(clovece "-framework OpenGL")
-endif()
+endif ()
 
 # That's it! You should have an example executable that you can run. Have fun!

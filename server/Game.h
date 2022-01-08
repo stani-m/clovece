@@ -18,7 +18,7 @@ public:
 
     void render(int playerSockFd);
 
-    void startListening();
+    void startListening() const;
 
     ~Game();
 

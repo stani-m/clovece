@@ -5,9 +5,10 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <cstring>
+#include <raylib.h>
 #include "Player.h"
-#include "Tile.h"
-#include "Dice.h"
+#include "entities/Tile.h"
+#include "entities/Dice.h"
 #include "../common/utils.h"
 #include "../common/messages.h"
 
@@ -15,45 +16,47 @@ Player::Player(SColor color, Board &board, int sockFd)
         : color(color), pieces({nullptr, nullptr, nullptr, nullptr}), board(board) {
     switch (color) {
         case SColor::Red:
-            pieces[0] = new Piece(0, 0, SColor::Red);
-            pieces[1] = new Piece(1, 0, SColor::Red);
-            pieces[2] = new Piece(1, 1, SColor::Red);
-            pieces[3] = new Piece(0, 1, SColor::Red);
-            entities.push_back(Tile(0, 0, SColor::Red));
-            entities.push_back(Tile(1, 0, SColor::Red));
-            entities.push_back(Tile(1, 1, SColor::Red));
-            entities.push_back(Tile(0, 1, SColor::Red));
+            pieces[0] = new Piece({0, 0}, SColor::Red);
+            pieces[1] = new Piece({1, 0}, SColor::Red);
+            pieces[2] = new Piece({1, 1}, SColor::Red);
+            pieces[3] = new Piece({0, 1}, SColor::Red);
+            entities.push_back(Tile({0, 0}, SColor::Red));
+            entities.push_back(Tile({1, 0}, SColor::Red));
+            entities.push_back(Tile({1, 1}, SColor::Red));
+            entities.push_back(Tile({0, 1}, SColor::Red));
             break;
         case SColor::Blue:
-            pieces[0] = new Piece(9, 0, SColor::Blue);
-            pieces[1] = new Piece(10, 0, SColor::Blue);
-            pieces[2] = new Piece(10, 1, SColor::Blue);
-            pieces[3] = new Piece(9, 1, SColor::Blue);
-            entities.push_back(Tile(9, 0, SColor::Blue));
-            entities.push_back(Tile(10, 0, SColor::Blue));
-            entities.push_back(Tile(10, 1, SColor::Blue));
-            entities.push_back(Tile(9, 1, SColor::Blue));
+            pieces[0] = new Piece({9, 0}, SColor::Blue);
+            pieces[1] = new Piece({10, 0}, SColor::Blue);
+            pieces[2] = new Piece({10, 1}, SColor::Blue);
+            pieces[3] = new Piece({9, 1}, SColor::Blue);
+            entities.push_back(Tile({9, 0}, SColor::Blue));
+            entities.push_back(Tile({10, 0}, SColor::Blue));
+            entities.push_back(Tile({10, 1}, SColor::Blue));
+            entities.push_back(Tile({9, 1}, SColor::Blue));
             break;
         case SColor::Green:
-            pieces[0] = new Piece(9, 9, SColor::Green);
-            pieces[1] = new Piece(10, 9, SColor::Green);
-            pieces[2] = new Piece(10, 10, SColor::Green);
-            pieces[3] = new Piece(9, 10, SColor::Green);
-            entities.push_back(Tile(9, 9, SColor::Green));
-            entities.push_back(Tile(10, 9, SColor::Green));
-            entities.push_back(Tile(10, 10, SColor::Green));
-            entities.push_back(Tile(9, 10, SColor::Green));
+            pieces[0] = new Piece({9, 9}, SColor::Green);
+            pieces[1] = new Piece({10, 9}, SColor::Green);
+            pieces[2] = new Piece({10, 10}, SColor::Green);
+            pieces[3] = new Piece({9, 10}, SColor::Green);
+            entities.push_back(Tile({9, 9}, SColor::Green));
+            entities.push_back(Tile({10, 9}, SColor::Green));
+            entities.push_back(Tile({10, 10}, SColor::Green));
+            entities.push_back(Tile({9, 10}, SColor::Green));
             break;
         case SColor::Yellow:
-            pieces[0] = new Piece(0, 9, SColor::Yellow);
-            pieces[1] = new Piece(1, 9, SColor::Yellow);
-            pieces[2] = new Piece(1, 10, SColor::Yellow);
-            pieces[3] = new Piece(0, 10, SColor::Yellow);
-            entities.push_back(Tile(0, 9, SColor::Yellow));
-            entities.push_back(Tile(1, 9, SColor::Yellow));
-            entities.push_back(Tile(1, 10, SColor::Yellow));
-            entities.push_back(Tile(0, 10, SColor::Yellow));
+            pieces[0] = new Piece({0, 9}, SColor::Yellow);
+            pieces[1] = new Piece({1, 9}, SColor::Yellow);
+            pieces[2] = new Piece({1, 10}, SColor::Yellow);
+            pieces[3] = new Piece({0, 10}, SColor::Yellow);
+            entities.push_back(Tile({0, 9}, SColor::Yellow));
+            entities.push_back(Tile({1, 9}, SColor::Yellow));
+            entities.push_back(Tile({1, 10}, SColor::Yellow));
+            entities.push_back(Tile({0, 10}, SColor::Yellow));
             break;
+        default:
+            throw std::runtime_error("Unreachable!");
     }
 
     socklen_t cliLen = sizeof(cliAddr);
@@ -108,6 +111,8 @@ std::pair<int, int> Player::diceCoordinates() const {
         case SColor::Yellow:
             coordinates = {2, 8};
             break;
+        default:
+            throw std::runtime_error("Unreachable!");
     }
     return coordinates;
 }
@@ -127,6 +132,8 @@ std::pair<int, int> Player::startCoordinates() const {
         case SColor::Yellow:
             coordinates = {4, 10};
             break;
+        default:
+            throw std::runtime_error("Unreachable!");
     }
     return coordinates;
 }
@@ -134,7 +141,7 @@ std::pair<int, int> Player::startCoordinates() const {
 
 void Player::rollDice() {
     entities.pop_back();
-    Dice dice(5, 5, rand() % 6 + 1);
+    Dice dice(5, 5, GetRandomValue(1, 6));
     entities.push_back(dice);
     std::pair<int, int> start = startCoordinates();
     Piece *pieceInStart = nullptr;
@@ -179,10 +186,11 @@ Player::~Player() {
 }
 
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)), pieces(old.pieces),
-                                       actions(std::move(old.actions)), board(old.board), playerSockFd(old.playerSockFd), cliAddr(old.cliAddr) {
+                                       actions(std::move(old.actions)), board(old.board),
+                                       playerSockFd(old.playerSockFd), cliAddr(old.cliAddr) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
     old.playerSockFd = -1;
-    bzero((char*)&old.cliAddr, sizeof(old.cliAddr));
+    bzero((char *) &old.cliAddr, sizeof(old.cliAddr));
 }
 
 bool Player::doAction(const std::pair<int, int> &clickPoint) {
@@ -215,7 +223,7 @@ Player &Player::operator=(Player &&other) noexcept {
     playerSockFd = other.playerSockFd;
     other.playerSockFd = 0;
     cliAddr = other.cliAddr;
-    bzero((char*)&other.cliAddr, sizeof(other.cliAddr));
+    bzero((char *) &other.cliAddr, sizeof(other.cliAddr));
     return *this;
 }
 

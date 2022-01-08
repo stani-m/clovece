@@ -32,21 +32,6 @@ void *serverThread(void *arg) {
     return nullptr;
 }
 
-void *clientThread(void *arg) {
-    auto *data = static_cast<Data *>(arg);
-
-    pthread_mutex_lock(data->mutex);
-    while (!data->serverStarted) {
-        pthread_cond_wait(data->serverStartedCond, data->mutex);
-    }
-    Client client(data->serverAddress, PORT);
-    pthread_mutex_unlock(data->mutex);
-
-    client.start();
-
-    return nullptr;
-}
-
 int main(int argn, char *argv[]) {
     if (argn < 3) {
         fprintf(stderr, "incorrect number of arguments\n");

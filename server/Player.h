@@ -10,9 +10,9 @@ class Board;
 #include <vector>
 #include <array>
 #include <netinet/in.h>
-#include "Entity.h"
-#include "Piece.h"
-#include "Action.h"
+#include "entities/Entity.h"
+#include "entities/Piece.h"
+#include "entities/Action.h"
 #include "Board.h"
 
 class Player {

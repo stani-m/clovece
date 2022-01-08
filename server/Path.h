@@ -8,8 +8,8 @@
 
 #include <vector>
 #include <array>
-#include "Entity.h"
-#include "Piece.h"
+#include "entities/Entity.h"
+#include "entities/Piece.h"
 
 class Path {
 public:

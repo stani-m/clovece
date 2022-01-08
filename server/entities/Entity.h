@@ -6,11 +6,11 @@
 #define CLOVECE_ENTITY_H
 
 
-#include "../common/SColor.h"
+#include "../../common/SColor.h"
 
 class Entity {
 public:
-    void move(const std::pair<int, int> &coordinates);
+    void move(const std::pair<int, int> &coord);
 
     void rotate(float angle);
 
@@ -19,11 +19,10 @@ public:
     std::pair<int, int> getCoordinates() const;
 
 protected:
-    Entity(int x, int y, float angle, const std::string &assetPath);
+    Entity(std::pair<int, int> coordinates, float angle, const std::string &assetPath);
 
 private:
-    int x;
-    int y;
+    std::pair<int, int> coordinates;
     float angle;
 
     int textureIndex;

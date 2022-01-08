@@ -25,7 +25,7 @@ void *serverThread(void *arg) {
     pthread_mutex_lock(data->mutex);
     data->serverStarted = true;
     pthread_mutex_unlock(data->mutex);
-    pthread_cond_signal(data->serverStartedCond);
+    pthread_cond_broadcast(data->serverStartedCond);
 
     game.startGame(data->numberOfPlayers);
 

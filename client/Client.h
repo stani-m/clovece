@@ -11,6 +11,7 @@
 #include <string>
 #include <netinet/in.h>
 #include <raylib.h>
+#include "../common/SColor.h"
 
 struct REntity {
     int x;
@@ -41,7 +42,9 @@ private:
     const int WINDOW_WIDTH = 704;
     const int WINDOW_HEIGHT = 704;
 
-    bool isActive;
+    bool waitingForClick;
+
+    SColor color;
 
     std::vector<REntity> entities;
 

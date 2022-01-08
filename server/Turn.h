@@ -6,6 +6,7 @@
 #define CLOVECE_TURN_H
 
 
+#include <tuple>
 #include "Player.h"
 #include "TurnState.h"
 
@@ -13,7 +14,7 @@ class Turn {
 public:
     explicit Turn(Player &player);
 
-    bool advanceTurn();
+    std::pair<std::tuple<bool, bool, int>, bool> advanceTurn();
 
     Player *getPlayer() const;
 

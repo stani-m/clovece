@@ -8,6 +8,7 @@
 
 
 #include <string>
+#include <stdexcept>
 
 enum class SColor {
     Red, Green, Blue, Yellow, Black, White
@@ -28,7 +29,22 @@ inline std::string colorString(SColor color) {
         case SColor::White:
             return "White";
     }
-    return "";
+    throw std::runtime_error("Unreachable!");
+}
+
+inline std::string dotColor(SColor color) {
+    switch (color) {
+        case SColor::Red:
+            return "🔴";
+        case SColor::Green:
+            return "🟢";
+        case SColor::Blue:
+            return "🔵";
+        case SColor::Yellow:
+            return "🟡";
+        default:
+            throw std::runtime_error("Unreachable!");
+    }
 }
 
 #endif //CLOVECE_COLOR_H

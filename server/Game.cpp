@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Turn.h"
 #include "Player.h"
+#include "../common/messages.h"
 
 Game::Game(int port) : board(&players), playerTurn() {
     bzero((char *) &servAddr, sizeof(servAddr));
@@ -54,35 +55,46 @@ void Game::startGame(int numberOfPlayers) {
 
     Turn turn(players[playerTurn]);
 
-    bool gameEnded = false;
-    while (!gameEnded) {
-//        if (turn.advanceTurn()) {
-//            playerTurn = (playerTurn + 1) % players.size();
-//            bool allInEnd = true;
-//            for (const auto &piece: turn.getPlayer()->getPieces()) {
-//                if (piece->getState() != PieceState::InEnd) {
-//                    allInEnd = false;
-//                    break;
-//                }
-//            }
-//            if (allInEnd) {
-//                printf("%s player won!\n", colorString(turn.getPlayer()->getSColor()).c_str());
-//                break;
-//            }
-//            turn = Turn(players[playerTurn]);
-//        }
-        for (const auto &player : players) {
-            player.startRender();
-            render(player.getPlayerSockFd());
-            player.presentRender();
+    while (true) {
+        auto[info, endTurn] = turn.advanceTurn();
+        auto[quit, redraw, wait] = info;
+
+        if (quit) {
+            for (const auto &player : players) {
+                player.sendMessage(PRINT_MESSAGE);
+                player.sendMessage("Game has ended due to a player disconnecting.");
+                player.quit();
+            }
+            break;
         }
-        break;
-    }
+        if (endTurn) {
+            bool allInEnd = true;
+            for (const auto &piece: turn.getPlayer()->getPieces()) {
+                if (piece->getState() != PieceState::InEnd) {
+                    allInEnd = false;
+                    break;
+                }
+            }
+            if (allInEnd) {
+                for (const auto &player: players) {
+                    player.sendMessage(PRINT_MESSAGE);
+                    player.sendMessage(colorString(turn.getPlayer()->getSColor()) + " player won!");
+                    player.quit();
+                }
+                break;
+            }
+            playerTurn = (playerTurn + 1) % (int) players.size();
+            turn = Turn(players[playerTurn]);
+        }
 
-    sleep(3);
-
-    for (const auto &player : players) {
-        player.quit();
+        if (redraw) {
+            for (const auto &player: players) {
+                player.startRender();
+                render(player.getPlayerSockFd());
+                player.presentRender();
+            }
+        }
+        sleep(wait);
     }
 }
 

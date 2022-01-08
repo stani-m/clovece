@@ -6,7 +6,7 @@
 #define CLOVECE_ENTITY_H
 
 
-#include "SColor.h"
+#include "../common/SColor.h"
 
 class Entity {
 public:

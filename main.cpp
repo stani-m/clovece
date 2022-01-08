@@ -65,7 +65,7 @@ int main(int argn, char *argv[]) {
         pthread_cond_init(&serverStartedCond, nullptr);
 
         Data data{
-                .numberOfPlayers = atoi(argv[2]),
+                .numberOfPlayers = std::stoi(argv[2]),
                 .serverAddress = "localhost",
                 .mutex = &mutex,
                 .serverStarted = false,

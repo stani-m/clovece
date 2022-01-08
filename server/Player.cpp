@@ -61,8 +61,8 @@ Player::Player(SColor color, Board &board, int sockFd)
     if (playerSockFd < 0) {
         throw std::runtime_error("ERROR on accept");
     }
-    sendString(playerSockFd, PRINT_MESSAGE);
-    sendString(playerSockFd, "You are playing as " + colorString(color) + "!");
+
+    sendInt(playerSockFd, (int) color);
 }
 
 void Player::startRender() const {
@@ -91,7 +91,6 @@ void Player::renderActions(int targetPlayerSockFd) const {
 void Player::startTurn() {
     std::pair<int, int> coordinates = diceCoordinates();
     entities.push_back(Dice(coordinates.first, coordinates.second, 6));
-    sendString(playerSockFd, TURN_START);
 }
 
 std::pair<int, int> Player::diceCoordinates() const {
@@ -182,7 +181,7 @@ Player::~Player() {
 Player::Player(Player &&old) noexcept: color(old.color), entities(std::move(old.entities)), pieces(old.pieces),
                                        actions(std::move(old.actions)), board(old.board), playerSockFd(old.playerSockFd), cliAddr(old.cliAddr) {
     old.pieces = {nullptr, nullptr, nullptr, nullptr};
-    old.playerSockFd = 0;
+    old.playerSockFd = -1;
     bzero((char*)&old.cliAddr, sizeof(old.cliAddr));
 }
 
@@ -199,6 +198,7 @@ bool Player::doAction(const std::pair<int, int> &clickPoint) {
 void Player::endTurn() {
     entities.pop_back();
     actions.clear();
+
 }
 
 int Player::getActionsCount() const {
@@ -233,5 +233,17 @@ int Player::getPlayerSockFd() const {
 
 void Player::quit() const {
     sendString(playerSockFd, QUIT);
+}
+
+void Player::sendMessage(const std::string &message) const {
+    sendString(playerSockFd, message);
+}
+
+std::pair<bool, std::pair<int, int>> Player::getClick() const {
+    sendMessage(GET_CLICK);
+    if (receiveString(playerSockFd) == MOUSE_CLICK) {
+        return {false, {receiveInt(playerSockFd), receiveInt(playerSockFd)}};
+    }
+    return {true, {-1, -1}};
 }
 

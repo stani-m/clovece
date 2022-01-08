@@ -53,6 +53,10 @@ public:
 
     void quit() const;
 
+    void sendMessage(const std::string &message) const;
+
+    std::pair<bool, std::pair<int, int>> getClick() const;
+
     ~Player();
 
 private:

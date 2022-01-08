@@ -5,16 +5,10 @@
 #ifndef CLOVECE_MESSAGES_H
 #define CLOVECE_MESSAGES_H
 
-#define TURN_START "turn start"
-
 #define QUIT "quit"
 
-#define CONTINUE "continue"
-
+#define GET_CLICK "get click"
 #define MOUSE_CLICK "mouse click"
-
-#define ACTIVATE "activate"
-#define DEACTIVATE "deactivate"
 
 #define START_REDRAW "start redraw"
 #define END_REDRAW "end redraw"

@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <cstring>
 
-Client::Client(const std::string &hostname, int port) : isActive(false) {
+Client::Client(const std::string &hostname, int port) : waitingForClick(false) {
     images.emplace_back(LoadImage("assets/RedPiece.png"));
     images.emplace_back(LoadImage("assets/BluePiece.png"));
     images.emplace_back(LoadImage("assets/GreenPiece.png"));
@@ -54,24 +54,24 @@ Client::Client(const std::string &hostname, int port) : isActive(false) {
     if (connect(sockFd, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0) {
         throw std::runtime_error("Error connecting to socket");
     }
+
+    color = (SColor) receiveInt(sockFd);
+    printf("You are playing as %s!\n", colorString(color).c_str());
 }
 
 void Client::start() {
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Človeče");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, ("Človeče " + dotColor(color)).c_str());
     SetTargetFPS(60);
 
     loadTextures();
 
-    bool externalQuit = false;
     while (!WindowShouldClose()) {
-        if (!isActive) {
+        if (!waitingForClick) {
             std::string message = receiveString(sockFd);
             if (message == QUIT) {
-                externalQuit = true;
-                break;
-            } else if (message == ACTIVATE) {
-                sendString(sockFd, CONTINUE);
-                isActive = true;
+                unloadTextures();
+                CloseWindow();
+                return;
             } else if (message == START_REDRAW) {
                 entities.clear();
                 while (receiveString(sockFd) == TEXTURE) {
@@ -83,15 +83,15 @@ void Client::start() {
                 }
             } else if (message == PRINT_MESSAGE) {
                 printf("%s\n", receiveString(sockFd).c_str());
+            } else if (message == GET_CLICK) {
+                waitingForClick = true;
             }
         } else {
             if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
                 sendString(sockFd, MOUSE_CLICK);
                 sendInt(sockFd, GetMouseX() / 64);
                 sendInt(sockFd, GetMouseY() / 64);
-                if (receiveString(sockFd) == DEACTIVATE) {
-                    isActive = false;
-                }
+                waitingForClick = false;
             }
         }
 
@@ -106,18 +106,26 @@ void Client::start() {
     unloadTextures();
     CloseWindow();
 
-    if (!externalQuit) {
-        if (!isActive) {
-            while (true) {
-                std::string message = receiveString(sockFd);
-                if (message == QUIT) {
-                    return;
-                } else if (message == ACTIVATE) {
-                    break;
-                }
+    if (waitingForClick) {
+        sendString(sockFd, QUIT);
+    }
+    while (true) {
+        std::string message = receiveString(sockFd);
+        if (message == QUIT) {
+            return;
+        } else if (message == GET_CLICK) {
+            sendString(sockFd, QUIT);
+            return;
+        } else if (message == PRINT_MESSAGE) {
+            printf("%s\n", receiveString(sockFd).c_str());
+        } else if (message == START_REDRAW) {
+            while (receiveString(sockFd) == TEXTURE) {
+                receiveInt(sockFd);
+                receiveInt(sockFd);
+                receiveFloat(sockFd);
+                receiveInt(sockFd);
             }
         }
-        sendString(sockFd, QUIT);
     }
 }
 
@@ -126,7 +134,7 @@ Client::~Client() {
 }
 
 void Client::loadTextures() {
-    for (const auto &image : images) {
+    for (const auto &image: images) {
         textures.emplace_back(LoadTextureFromImage(image));
         UnloadImage(image);
     }
@@ -134,7 +142,7 @@ void Client::loadTextures() {
 }
 
 void Client::unloadTextures() {
-    for (const auto &texture : textures) {
+    for (const auto &texture: textures) {
         UnloadTexture(texture);
     }
     textures.clear();
